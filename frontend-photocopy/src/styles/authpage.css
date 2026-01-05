@@ -1,0 +1,139 @@
+/* Bao phủ toàn bộ trang */
+.auth-page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f9ff; /* Màu xanh da trời nhạt */
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  padding: 1rem;
+}
+
+/* Card chính nằm giữa màn hình */
+.auth-card-container {
+  background: #ffffff;
+  width: 100%;
+  max-width: 420px;
+  padding: 3rem 2rem 2.5rem;
+  border-radius: 24px; /* Border radius lớn cho cảm giác hiện đại */
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+  position: relative;
+  border: 1px solid #e2e8f0;
+}
+
+/* Nút quay lại ở góc */
+.btn-back {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #3b82f6;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+  background-color: #eff6ff;
+  transform: translateX(-3px);
+}
+
+/* Header & Tiêu đề */
+.auth-header-section {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-header-section h2 {
+  color: #1e3a8a; /* Xanh Navy đậm */
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.auth-subtitle {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+/* Layout của Form */
+.auth-form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.input-field label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #334155;
+  margin-left: 4px;
+}
+
+.input-field input {
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  outline: none;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.input-field input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+/* Nút Submit */
+.btn-submit-auth {
+  background-color: #2563eb;
+  color: white;
+  padding: 0.875rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.btn-submit-auth:hover {
+  background-color: #1d4ed8;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+
+.btn-submit-auth:active {
+  transform: scale(0.98);
+}
+
+/* Link chuyển đổi */
+.auth-switch-mode {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.auth-switch-mode a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.auth-switch-mode a:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,67 @@
+.header {
+    width: 100vw;
+    display: flex;
+    height: 70px;
+    padding: 20px 0px;
+    position: sticky;
+    margin-top: 20px;
+    background-color: white;
+}
+.logo-image{
+    flex: 1;
+    margin-left: 20px;
+}
+.header-buttons{
+    flex: 8;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin: 10px;
+    align-items: center;
+}
+.header-button, .header-login-button, .header-signup-button{
+    width: 7vw;
+    height: 50px;
+    border: none;
+    font-weight: bold;
+    border-radius: 18px;
+    cursor: pointer;
+    background-color: rgb(243, 242, 242);
+    transition: all 0.2s ease-in;
+}
+.header-button:hover, .header-button.active{
+    background-color: rgb(0, 90, 186);
+    box-shadow: 0px 3px 10px 4px rgb(164, 164, 164);
+    color: white;
+    scale: 1.05;
+}
+.header-button.active{
+    animation: floating 2s infinite;
+}
+@keyframes floating {
+    50%{
+        transform:translateY(-5px);
+    }
+    100%{
+        transform:translateY(0px);
+    }
+}
+.header-login-button, .header-signup-button{
+    color: white;
+}
+.header-login-button{
+    background-color: rgb(0, 123, 255);
+}
+.header-login-button:hover, .header-signup-button:hover{
+    box-shadow: 0px 3px 10px 4px rgb(164, 164, 164);
+    scale: 1.05;
+}
+.header-login-button:hover{
+     background-color: rgb(0, 90, 186);
+}
+.header-signup-button:hover{
+    background-color: rgb(0, 117, 31);
+}
+.header-signup-button{
+    background-color: rgb(6, 172, 50);
+}

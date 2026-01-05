@@ -1,0 +1,47 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    # Lấy thông tin từ .env hoặc biến môi trường hosting
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      max-lifetime: 1200000
+      connection-timeout: 30000
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      # ddl-auto:
+      # - update: Tự động cập nhật bảng khi bạn sửa Entity Java (Dùng cho Local/Dev)
+      # - validate: Kiểm tra database, không tự ý sửa (Dùng cho Production)
+      ddl-auto: update 
+    show-sql: true # In câu lệnh SQL ra console để bạn theo dõi
+    properties:
+      hibernate:
+        format_sql: true # Định dạng câu SQL cho dễ đọc
+        highlight_sql: true
+        # Tối ưu cho PostgreSQL 16+ (đi kèm với Spring 4)
+        jdbc:
+          batch_size: 20
+          order_inserts: true
+          order_updates: true
+  web:
+    error:
+      include-message: always # Hiển thị thông báo lỗi chi tiết cho ReactJS dễ debug
+
+# Cấu hình cho thư viện JJWT của bạn
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:86400000} # Mặc định 24h nếu không có biến env
+
+# Cấu hình log để dễ theo dõi lỗi SQL
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

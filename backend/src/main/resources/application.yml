@@ -15,7 +15,7 @@ spring:
       connection-timeout: 30000
 
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database: postgresql
     hibernate:
       # ddl-auto:
       # - update: Tự động cập nhật bảng khi bạn sửa Entity Java (Dùng cho Local/Dev)

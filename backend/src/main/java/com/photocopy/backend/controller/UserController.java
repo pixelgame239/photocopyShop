@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.photocopy.backend.dto.request.UserRequest;
+import com.photocopy.backend.dto.response.AuthResponse;
 import com.photocopy.backend.dto.response.UserResponse;
 import com.photocopy.backend.service.UserService;
 
@@ -20,13 +21,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/")
-    public UserResponse createUser(@RequestBody UserRequest request) {
-        return userService.createUser(request);
+    @PostMapping("/signup")
+    public AuthResponse signup(@RequestBody UserRequest request) {
+        return userService.signup(request);
     }
     @GetMapping("/{id}")
     public UserResponse getUser(@PathVariable Long id) {
         return userService.getUserById(id);
     }
+    @PostMapping("/login")
+    public AuthResponse login(@RequestBody UserRequest request) {
+        return userService.login(request);
+
+    }
+    
     
 }

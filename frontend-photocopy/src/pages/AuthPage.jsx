@@ -1,74 +1,161 @@
 import React, { useState } from 'react';
 import '../styles/authpage.css';
 import { useNavigate } from 'react-router-dom';
+import { userApi } from '../api/user.api';
 
 const AuthPage = ({ authMethod }) => {
-    const nav = useNavigate();
-     return (
-        <div className="auth-page-wrapper">
-        <div className="auth-card-container">
-            {/* Nút quay lại ở góc form */}
-            <button 
-            className="btn-back" 
-            onClick={() => nav("/")}
-            aria-label="Quay lại"
-            >
-            <svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 -960 960 960" width="35px" fill="#0e53f5ff"><path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z"/></svg>
-            </button>
+  const nav = useNavigate();
 
-            <div className="auth-header-section">
-            <h2>{authMethod==='login' ? 'Đăng Nhập' : 'Đăng Ký Tài Khoản'}</h2>
-            <p className="auth-subtitle">
-                {authMethod==='login' ? 'Chào mừng bạn quay trở lại' : 'Vui lòng điền thông tin bên dưới'}
-            </p>
-            </div>
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+    fullName: '',
+    phoneNumber: ''
+  });
 
-            <form className="auth-form-content">
-            {authMethod!=='login' && (
-                <>
-                <div className="input-field">
-                    <label>Họ và tên</label>
-                    <input type="text" placeholder="Nguyễn Văn A" required />
-                </div>
-                <div className="input-field">
-                    <label>Số điện thoại</label>
-                    <input type="tel" placeholder="09xx xxx xxx" required />
-                </div>
-                </>
-            )}
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-            <div className="input-field">
-                <label>Email</label>
-                <input type="email" placeholder="email@vi-du.com" required />
-            </div>
+  const validatePassword = () => {
+    return form.password === confirmPassword;
+  };
 
-            <div className="input-field">
-                <label>Mật khẩu</label>
-                <input type="password" placeholder="••••••••" required />
-            </div>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
 
-            {!authMethod==='login' && (
-                <div className="input-field">
-                <label>Xác nhận mật khẩu</label>
-                <input type="password" placeholder="••••••••" required />
-                </div>
-            )}
+    if (authMethod === 'signup' && !validatePassword()) {
+      setError('Mật khẩu không khớp');
+      return;
+    }
 
-            <button type="submit" className="btn-submit-auth">
-                {authMethod==='login' ? 'Đăng nhập' : 'Đăng ký ngay'}
-            </button>
-            </form>
+    try {
+      setLoading(true);
 
-            <div className="auth-switch-mode">
-            <a style={{cursor:"pointer"}} onClick={()=>{authMethod==='login'?nav("/signup"):nav("/login")}}>
-                {authMethod==='login' 
-                ? "Bạn chưa có tài khoản? Đăng ký" 
-                : "Bạn đã có tài khoản? Đăng nhập"}
-            </a>
-            </div>
+      if (authMethod === 'signup') {
+        await userApi.createUser(form);
+        alert('Đăng ký thành công');
+        nav('/login');
+      }
+
+      if (authMethod === 'login') {
+        // TODO: gọi API login
+        console.log('Login form:', form);
+      }
+
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || 'Có lỗi xảy ra');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="auth-page-wrapper">
+      <div className="auth-card-container">
+
+        <button className="btn-back" onClick={() => nav('/')}>
+          ←
+        </button>
+
+        <div className="auth-header-section">
+          <h2>{authMethod === 'login' ? 'Đăng Nhập' : 'Đăng Ký Tài Khoản'}</h2>
+          <p>
+            {authMethod === 'login'
+              ? 'Chào mừng bạn quay trở lại'
+              : 'Vui lòng điền thông tin bên dưới'}
+          </p>
         </div>
+
+        <form className="auth-form-content" onSubmit={handleSubmit}>
+
+          {authMethod !== 'login' && (
+            <>
+              <div className="input-field">
+                <label>Họ và tên</label>
+                <input
+                  type="text"
+                  required
+                  value={form.fullName}
+                  onChange={e => setForm({ ...form, fullName: e.target.value })}
+                />
+              </div>
+
+              <div className="input-field">
+                <label>Số điện thoại</label>
+                <input
+                  type="tel"
+                  required
+                  value={form.phoneNumber}
+                  onChange={e => setForm({ ...form, phoneNumber: e.target.value })}
+                />
+              </div>
+            </>
+          )}
+
+          <div className="input-field">
+            <label>Email</label>
+            <input
+              type="email"
+              required
+              value={form.email}
+              onChange={e => setForm({ ...form, email: e.target.value })}
+            />
+          </div>
+
+          <div className="input-field">
+            <label>Mật khẩu</label>
+            <input
+              type="password"
+              required
+              value={form.password}
+              onChange={e => setForm({ ...form, password: e.target.value })}
+            />
+          </div>
+
+          {authMethod !== 'login' && (
+            <div className="input-field">
+              <label>Xác nhận mật khẩu</label>
+              <input
+                type="password"
+                required
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+              />
+            </div>
+          )}
+
+          {error && <p className="error-text">{error}</p>}
+
+          <button
+            type="submit"
+            disabled={loading || (authMethod === 'signup' && !validatePassword())}
+            className="btn-submit-auth"
+          >
+            {loading
+              ? 'Đang xử lý...'
+              : authMethod === 'login'
+              ? 'Đăng nhập'
+              : 'Đăng ký'}
+          </button>
+        </form>
+
+        <div className="auth-switch-mode">
+          <span
+            onClick={() =>
+              authMethod === 'login' ? nav('/signup') : nav('/login')
+            }
+          >
+            {authMethod === 'login'
+              ? 'Bạn chưa có tài khoản? Đăng ký'
+              : 'Bạn đã có tài khoản? Đăng nhập'}
+          </span>
         </div>
-    );
-    };
+      </div>
+    </div>
+  );
+};
 
 export default AuthPage;

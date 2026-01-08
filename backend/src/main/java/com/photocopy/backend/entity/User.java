@@ -26,7 +26,7 @@ public class User {
     @Column(nullable = false)
     private String password;
     @Enumerated(EnumType.STRING) 
-    @Column
+    @Column(nullable = false)
     private UserRole role;
     @Column(name = "fullname")
     private String fullName;

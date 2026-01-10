@@ -1,0 +1,76 @@
+.footer-container{
+    width: 100%;
+    background-color: rgb(0, 123, 255);
+    height: 35vh;
+    margin-top: 20px;
+    display:flex;
+    justify-content: space-between;
+    position: relative;
+}
+.title{
+    font-size: 25px;
+    font-family: "Potta One", system-ui;
+    color: rgb(237, 237, 237);
+    font-weight: bold;
+    z-index: 3;
+    transition: all 0.1s;
+    cursor: pointer;
+}
+.title:hover{
+    font-size: 27px;
+    font-weight: bold;
+}
+
+.column{
+    padding: 10px;
+}
+.information-area{
+    flex-basis: 20%;
+    margin: 0 20px;
+}
+.information{
+    font-size: 14px;
+    color: rgb(216, 215, 215);
+    line-height: 1.5;
+}
+.social-media{
+    display: flex;
+    gap: 10px;
+}
+.zalo-icon, .gmail-icon, .facebook-icon{
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    background-size: contain;
+    background-repeat:no-repeat ;
+    transition: background-image 0.3s linear, transform 0.3s linear;
+    filter: invert(100%);
+}
+.zalo-icon{
+    background-image: url("https://img.icons8.com/?size=100&id=82445&format=png&color=000000");
+}
+.gmail-icon{
+    background-image: url("https://img.icons8.com/?size=100&id=Y2GfpkgYNp42&format=png&color=000000");
+}
+.zalo-icon:hover{
+    background-image: url("https://img.icons8.com/?size=100&id=kCkVjJKG3GWw&format=png&color=000000");
+}
+.gmail-icon:hover{
+    background-image: url("https://img.icons8.com/?size=100&id=nQ4dZIRCI0nW&format=png&color=000000");
+}
+.gmail-icon:hover, .zalo-icon:hover, .facebook-icon:hover{
+    filter:none;
+    transform: scale(1.2);
+}
+.facebook-icon{
+    background-image: url("https://img.icons8.com/?size=100&id=118489&format=png&color=000000");
+}
+.facebook-icon:hover{
+    background-image: url("https://img.icons8.com/?size=100&id=118498&format=png&color=000000");
+}
+.map-area{
+    flex-basis: 40%;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}

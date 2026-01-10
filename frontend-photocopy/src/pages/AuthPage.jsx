@@ -147,6 +147,7 @@ const AuthPage = ({ authMethod }) => {
             onClick={() =>
               authMethod === 'login' ? nav('/signup') : nav('/login')
             }
+            style={{cursor:"pointer", textDecoration:"underline"}}
           >
             {authMethod === 'login'
               ? 'Bạn chưa có tài khoản? Đăng ký'

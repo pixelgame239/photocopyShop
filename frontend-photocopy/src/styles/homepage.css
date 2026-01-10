@@ -1,0 +1,88 @@
+.home-banner{
+    width: 100vw;
+    height: 45vh;
+    background: linear-gradient(to right,  rgb(0, 123, 255) 0%, rgb(122, 177, 255) 60%, white 100%);
+    display: flex;
+}
+.banner-content{
+    text-align: center;
+    justify-content: center;
+    flex: 6;
+    color: white;
+    align-content: center;
+}
+.banner-content button {
+    border: none;
+    border-radius: 16px;
+    color: rgb(40, 144, 255);  
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease-in;
+    background-color: white;
+    height: 50px;
+    padding: 0 15px;
+    display: flex;     
+    align-items: center;   
+    justify-content: center; 
+    gap: 8px;         
+    margin: 0 auto;
+}
+
+.banner-content button img {
+    height: 70%;      
+    display: block;          
+}
+.banner-content button:hover{
+    transform: scale(1.09);
+}
+.banner-img{
+    flex: 4;
+    height: 100%;
+    justify-content: center;
+    align-content: center;
+    width: 100%;
+    display: flex;
+}
+.bubble-chat{
+  position: fixed;
+  right: 10px;
+  bottom: 70px;
+  background-color: white;
+  border: 1px solid rgb(36, 106, 255);
+  border-radius: 45%;
+  cursor: pointer;
+  width: 60px;
+  height: 60px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  display: flex;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* subtle shadow */
+  transition: transform 0.2s ease;
+  z-index: 10;
+}
+.bubble-chat:hover {
+  transform: scale(1.05); /* gentle grow on hover */
+}
+@keyframes vibrate {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(10deg); /* Move slightly left */
+  }
+  50% {
+    transform: rotate(0deg); /* Move slightly right */
+  }
+  75% {
+    transform: rotate(-10deg); /* Move slightly left */
+  }
+  100% {
+    transform: rotate(0deg); /* Back to original */
+  }
+}
+
+.bubble-chat img {
+  width: 72%;
+  animation: vibrate 0.7s linear infinite; /* Vibrate effect */
+}

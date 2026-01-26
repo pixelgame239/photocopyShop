@@ -40,7 +40,9 @@ const AuthPage = ({ authMethod }) => {
       }
 
       if (authMethod === 'login') {
-        // TODO: gọi API login
+        const temp = {email: form.email, password: form.password}
+        const response = await userApi.login(temp);
+        console.log(response);
         console.log('Login form:', form);
       }
 

@@ -11,6 +11,7 @@ import com.photocopy.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -32,8 +33,13 @@ public class UserController {
     @PostMapping("/login")
     public AuthResponse login(@RequestBody UserRequest request) {
         return userService.login(request);
-
     }
-    
-    
+    @PostMapping("/refresh")
+    public AuthResponse refresh(@CookieValue("refresh_token") String token) {
+        return userService.refresh(token);
+    }
+    @PostMapping("/logout")
+    public void logout(@CookieValue("refresh_token") String token) {
+        userService.logout(token);
+    }
 }

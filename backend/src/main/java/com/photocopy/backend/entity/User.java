@@ -28,10 +28,13 @@ public class User {
     @Enumerated(EnumType.STRING) 
     @Column(nullable = false)
     private UserRole role;
-    @Column(name = "fullname")
+    @Column(name = "full_name")
     private String fullName;
-    @Column(name = "phonenumber")
+    @Column(name = "phone_number")
     private String phoneNumber;
+    @Builder.Default
+    @Column(name="user_point")
+    private int userPoint=0;
 
     public void updateProfile(String fullName, String phoneNumber){
         this.fullName= fullName;
@@ -40,6 +43,10 @@ public class User {
 
     public void changePassword(String encodedPassword){
         this.password = encodedPassword;
+    }
+
+    public void updateCoin(int amount){
+        this.userPoint += amount;
     }
 
     @Override
@@ -61,6 +68,7 @@ public class User {
                 "id=" + id +
                 ", email='" + email + '\'' +
                 ", fullName='" + fullName + '\'' +
+                ", user point=" + userPoint + '\''+
                 '}';
     }
 }

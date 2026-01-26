@@ -11,4 +11,8 @@ public interface UserService {
     UserResponse getUserById(Long id);
 
     AuthResponse login(UserRequest request);
+
+    AuthResponse refresh(String refreshToken);
+    
+    void logout(String refreshToken);
 }

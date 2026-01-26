@@ -2,15 +2,20 @@ package com.photocopy.backend.service.impl;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.photocopy.backend.constant.UserRole;
 import com.photocopy.backend.dto.request.UserRequest;
 import com.photocopy.backend.dto.response.AuthResponse;
 import com.photocopy.backend.dto.response.UserResponse;
+import com.photocopy.backend.entity.RefreshToken;
 import com.photocopy.backend.entity.User;
+import com.photocopy.backend.exception.ConflictException;
+import com.photocopy.backend.exception.UnauthorizedException;
 import com.photocopy.backend.mapper.UserMapper;
 import com.photocopy.backend.repository.UserRepository;
 import com.photocopy.backend.security.JwtProvider;
+import com.photocopy.backend.service.RefreshTokenService;
 import com.photocopy.backend.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -21,11 +26,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
+    private final RefreshTokenService refreshTokenService;
 
+    @Transactional
     @Override
     public AuthResponse signup(UserRequest request){
         if(userRepository.existsByEmail(request.getEmail())){
-            throw new RuntimeException("Unexpected Error");
+            throw new ConflictException("Email đã tồn tại !");
         }
         User user = User.builder()
                             .email(request.getEmail())
@@ -36,7 +43,8 @@ public class UserServiceImpl implements UserService {
                             .build();
         User savedUser = userRepository.save(user);
         String token = jwtProvider.generateToken(savedUser.getId(), savedUser.getEmail(), savedUser.getRole().name());
-        return new AuthResponse(token, UserMapper.toResponse(savedUser));
+        RefreshToken refreshToken = refreshTokenService.create(user);
+        return new AuthResponse(token, refreshToken.getToken(), UserMapper.toResponse(savedUser));
     }
 
     @Override
@@ -46,12 +54,37 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public AuthResponse login(UserRequest request){
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(()-> new RuntimeException("Tài khoản hoặc mật khẩu không đúng"));
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(()-> new UnauthorizedException("Tài khoản hoặc mật khẩu không đúng"));
         boolean matchedPassword = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if(!matchedPassword){
-            throw new RuntimeException("Tài khoản hoặc mật khẩu không đúng");
+            throw new UnauthorizedException("Tài khoản hoặc mật khẩu không đúng");
         }
         String token = jwtProvider.generateToken(user.getId(), user.getEmail(), user.getRole().name());
-        return new AuthResponse(token, UserMapper.toResponse(user));
+        RefreshToken refreshToken = refreshTokenService.create(user);
+        return new AuthResponse(token, refreshToken.getToken(), UserMapper.toResponse(user));
+    }
+
+    @Override
+    public AuthResponse refresh(String token) {
+        RefreshToken oldToken = refreshTokenService.verify(token);
+        RefreshToken newToken = refreshTokenService.rotate(oldToken);
+
+        String accessToken = jwtProvider.generateToken(
+            oldToken.getUser().getId(),
+            oldToken.getUser().getEmail(),
+            oldToken.getUser().getRole().name()
+        );
+
+        return new AuthResponse(
+            accessToken,
+            newToken.getToken(),
+            UserMapper.toResponse(oldToken.getUser())
+        );
+    }
+
+    @Override
+    public void logout(String token) {
+        RefreshToken refreshToken = refreshTokenService.verify(token);
+        refreshTokenService.revoke(refreshToken);
     }
 }

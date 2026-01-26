@@ -6,5 +6,8 @@ export const userApi = {
     },
     getUserById(id){
         return axiosClient.get(`/users/${id}`);
+    },
+    login(data){
+        return axiosClient.post('/users/login', data);   
     }
 }

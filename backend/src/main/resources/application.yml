@@ -13,6 +13,9 @@ spring:
       idle-timeout: 300000
       max-lifetime: 1200000
       connection-timeout: 30000
+  threads:
+    virtual:
+      enabled: true
 
   jpa:
     database: postgresql
@@ -38,7 +41,8 @@ spring:
 # Cấu hình cho thư viện JJWT của bạn
 jwt:
   secret: ${JWT_SECRET}
-  expiration: ${JWT_EXPIRATION:86400000} # Mặc định 24h nếu không có biến env
+  expiration: ${JWT_EXPIRATION}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
 
 # Cấu hình log để dễ theo dõi lỗi SQL
 logging:

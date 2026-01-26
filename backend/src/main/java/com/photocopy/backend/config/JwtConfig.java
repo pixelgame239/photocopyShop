@@ -16,8 +16,12 @@ public class JwtConfig {
     public SecretKey jwtSecretKey(@Value("${jwt.secret}") String secret){
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
-    @Bean
+    @Bean("jwtExpiration")
     public long jwtExpiration(@Value("${jwt.expiration}") long expiration){
         return expiration;
+    }
+    @Bean("jwtRefreshExpiration")
+    public long jwtRefreshExpiration(@Value("${jwt.refresh-expiration}") long refreshExpiration){
+        return refreshExpiration;
     }
 }

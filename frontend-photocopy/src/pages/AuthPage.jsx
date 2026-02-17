@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../styles/authpage.css';
-import { useNavigate } from 'react-router-dom';
 import { userApi } from '../api/user.api';
+import { useContext } from 'react';
+import { UserContext } from '../context/UserContext';
+import { setAccessToken } from '../service/tokenService';
+import { useNavigate } from 'react-router-dom';
 
 const AuthPage = ({ authMethod }) => {
+  const { user, setUser } = useContext(UserContext);
   const nav = useNavigate();
-
+  useEffect(() => {
+    if (user && user.role !== "GUEST") {
+      nav('/');
+    }
+  }, [user]);
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -34,22 +42,22 @@ const AuthPage = ({ authMethod }) => {
       setLoading(true);
 
       if (authMethod === 'signup') {
-        await userApi.createUser(form);
-        alert('Đăng ký thành công');
-        nav('/login');
+          await userApi.sendVerification({...form, otp:null});
+          nav('/verificationSignup', { state: { email: form.email, password: form.password, fullName: form.fullName, phoneNumber: form.phoneNumber } });
       }
 
       if (authMethod === 'login') {
         const temp = {email: form.email, password: form.password}
         const response = await userApi.login(temp);
+        setAccessToken(response.data.accessToken);
+        setUser(response.data.userData);
+        nav('/');
         console.log(response);
-        console.log('Login form:', form);
       }
-
     } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || 'Có lỗi xảy ra');
-    } finally {
+      console.error("Login error:", err);
+      setError(err.response.data.message || "Có lỗi xảy ra");
+} finally {
       setLoading(false);
     }
   };

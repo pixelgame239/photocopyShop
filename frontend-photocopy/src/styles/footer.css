@@ -10,7 +10,7 @@
 .title{
     font-size: 25px;
     font-family: "Potta One", system-ui;
-    color: rgb(237, 237, 237);
+    color: rgb(255, 255, 255);
     font-weight: bold;
     z-index: 3;
     transition: all 0.1s;
@@ -30,7 +30,7 @@
 }
 .information{
     font-size: 14px;
-    color: rgb(216, 215, 215);
+    color: rgb(255, 255, 255);
     line-height: 1.5;
 }
 .social-media{

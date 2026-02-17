@@ -15,7 +15,7 @@ const HighlightSession = () =>{
     ];
     return(
         <div className="highlight-session">
-            {cardData.map(data=><HighlightCard cardData={data}></HighlightCard>)}
+            {cardData.map((data, index) => <HighlightCard key={index} cardData={data}></HighlightCard>)}
         </div>
     )
 }

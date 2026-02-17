@@ -47,5 +47,12 @@ jwt:
 # Cấu hình log để dễ theo dõi lỗi SQL
 logging:
   level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    root: INFO # Mức chung cho toàn hệ thống
+    org.springframework.web: DEBUG # Xem chi tiết các request/response và lỗi mapping
+    org.springframework.security: DEBUG # Nếu bạn có dùng Security (rất quan trọng để debug lỗi 401, 403)
+    com.yourpackage.name: DEBUG # Thay bằng package của bạn để xem log từ code mình viết
+    org.hibernate.orm.results: DEBUG # Log chi tiết kết quả trả về từ Hibernate
+google:
+  client-id: ${GOOGLE_CLIENT_ID}
+  client-secret: ${GOOGLE_CLIENT_SECRET}
+  refresh-token: ${GOOGLE_REFRESH_TOKEN}

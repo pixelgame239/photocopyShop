@@ -19,6 +19,10 @@ repositories {
 }
 
 dependencies {
+	implementation 'com.google.api-client:google-api-client:2.8.1'
+	implementation 'com.google.apis:google-api-services-gmail:v1-rev20240520-2.0.0'
+	implementation 'com.google.http-client:google-http-client-gson:2.1.0'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
@@ -26,6 +30,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	runtimeOnly 'org.postgresql:postgresql'
 	compileOnly 'org.projectlombok:lombok'
   	annotationProcessor 'org.projectlombok:lombok'

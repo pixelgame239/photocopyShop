@@ -1,15 +1,18 @@
-import { Route, Routes,  BrowserRouter as Router } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import HomePage from './pages/HomePage';
 import MainLayout from "./layouts/MainLayout";
-import { useState } from "react";
 import ServicesPage from "./pages/ServicesPage";
 import { TabProvider } from "./context/TabContext";
 import AuthPage from "./pages/AuthPage";
+import { UserProvider } from "./context/UserContext";
+import VerificationSignup from "./pages/VerificationSignup";
+import { useAxiosInterceptor } from "./service/useAxiosInterceptor";
 
 function App() {
+  useAxiosInterceptor();
   return (
     <TabProvider>
-    <Router>
+      <UserProvider>
       <Routes>
         <Route element={<MainLayout></MainLayout>}>
           <Route path='/' element={<HomePage></HomePage>}></Route>
@@ -17,8 +20,9 @@ function App() {
         </Route>
         <Route path="/login" element={<AuthPage authMethod="login"></AuthPage>}></Route>
         <Route path="/signup" element={<AuthPage authMethod="signup"></AuthPage>}></Route>
+        <Route path="/verificationSignup" element={<VerificationSignup></VerificationSignup>}></Route>
       </Routes>
-    </Router>
+      </UserProvider>
     </TabProvider>
   )
 }

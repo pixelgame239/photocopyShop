@@ -4,8 +4,10 @@
     height: 70px;
     padding: 20px 0px;
     position: sticky;
-    margin-top: 20px;
+    top: 0;
+    margin: 0;
     background-color: white;
+    z-index: 1000;
 }
 .logo-image{
     flex: 1;
@@ -53,7 +55,7 @@
 .header-login-button{
     background-color: rgb(0, 123, 255);
 }
-.header-login-button:hover, .header-signup-button:hover{
+.header-login-button:hover, .header-signup-button:hover, .header-profile-button:hover, .header-cart-button:hover{
     box-shadow: 0px 3px 10px 4px rgb(164, 164, 164);
     scale: 1.05;
 }
@@ -65,4 +67,78 @@
 }
 .header-signup-button{
     background-color: rgb(6, 172, 50);
+}
+ .header-profile-button{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: rgb(243, 242, 242);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease-in;
+}
+.header-profile-dropdown{
+    position: absolute;
+    top: 85px;
+    right: 20px;
+    background-color: white;
+    border: none;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+}
+.header-profile-dropdown-button{
+    padding: 15px 25px;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in;
+}
+.header-profile-dropdown-button:hover{
+    background-color: rgb(243, 242, 242);
+}
+.header-profile-dropdown-button.logout{
+    color: rgb(255, 0, 0);
+}
+.header-cart-button{
+    background-color: transparent;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease-in;
+}
+.header-cart-button .cart-badge{
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+}   
+.header-cart-button:hover{
+    animation: shake 0.5s;
+    animation-iteration-count: infinite;
+}
+@keyframes shake {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(-8deg); }
+    50% { transform: rotate(0deg); }
+    75% { transform: rotate(8deg); }
+    100% { transform: rotate(0deg); }
 }

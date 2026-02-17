@@ -38,13 +38,11 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public RefreshToken verify(String token) {
         RefreshToken refreshToken = repository.findByToken(token)
             .orElseThrow(() -> new BadRequestException("Refresh token không hợp lệ"));
-
         if (refreshToken.isExpired()) {
             refreshToken.revoke();
             repository.save(refreshToken);
             throw new BadRequestException("Refresh token đã hết hạn");
         }
-
         if (refreshToken.isRevoked()) {
             throw new BadRequestException("Refresh token đã bị thu hồi");
         }

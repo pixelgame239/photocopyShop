@@ -17,6 +17,5 @@ public class SignupRequest {
     private String fullName;
     @NotBlank(message = "Số điện thoại không được để trống")
     private String phoneNumber;
-    // OTP provided by user to complete signup (6 digits)
     private String otp;
 }

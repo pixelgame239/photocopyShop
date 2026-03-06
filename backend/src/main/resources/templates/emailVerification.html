@@ -1,52 +1,55 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Email Verification</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 600px;
-            margin: 50px auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #333;
-        }
-        p {
-            color: #555;
-        }
-        .button {
-            display: inline-block;
-            padding: 10px 20px;
-            margin-top: 20px;
-            background-color: #007BFF;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        .resend-link {
-            display: block;
-            margin-top: 20px;
-            color: #007BFF;
-            text-decoration: none;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Xác thực tài khoản tại Photocopy Shop</title>
+<style>
+    :root{
+        --primary:#1d74ff; /* light sky blue */
+        --card-bg:#ffffff;
+        --muted:#6b7280;
+        --otp-color:#1f84ff;
+    }
+    html,body{height:100%;margin:0;padding:0;font-family: 'Segoe UI', Roboto, Arial, sans-serif;}
+    .wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+    .card{width:100%;max-width:640px;background:var(--card-bg);border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.08);overflow:hidden}
+    .header{padding:20px 24px;background:var(--primary);display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--primary);font-weight:700;font-size:18px}
+    .title{font-size:18px;margin:0;color:#0f172a}
+    .subtitle{margin:0;color:black;font-size:13px}
+    .body{padding:28px 32px}
+    .greeting{font-size:16px;color:#0f172a;margin:0 0 8px}
+    .lead{color:var(--muted);margin:0 0 18px}
+    .otp-box{display:flex;align-items:center;justify-content:center;padding:16px;border-radius:8px;background:rgba(255,255,255,0.9);margin:12px 0 18px}
+    .otp{font-size:26px;font-weight:800;color:var(--otp-color);padding:6px 12px;border-radius:6px}
+    .note{color:var(--muted);font-size:13px;margin:8px 0}
+    .footer{padding:18px 32px;background:#f8fafc;color:var(--muted);font-size:13px}
+    @media (max-width:480px){.title{font-size:18px}.otp{font-size:22px}}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>Email Verification</h1>
-        <p>Dear <span th:text="${fullName}">User</span>,</p>
-        <p>Thank you for registering. Please click the button below to verify your email address.</p>
-        <p>Your verification code is: <strong th:text="${verificationCode}"></strong></p>
+<div class="wrap">
+    <div class="card">
+        <div class="header">
+            <div>
+                <h1 class="title">Xác thực đăng ký tài khoản</h1>
+                <p class="subtitle">Photocopy Shop — Xác minh email của bạn</p>
+            </div>
+        </div>
+        <div class="body">
+            <p class="greeting">Chào bạn, <span th:text="${fullName}"></span></p>
+            <p class="lead">Bạn đã yêu cầu tạo tài khoản trên Photocopy Shop. Vui lòng nhập mã bên dưới để hoàn tất quá trình đăng ký.</p>
+
+            <div class="otp-box">
+                <div class="otp" th:text="${verificationCode}">123456</div>
+            </div>
+
+            <p class="note"><strong>Lưu ý:</strong> Mã xác thực có hiệu lực trong 5 phút. Nếu bạn không yêu cầu mã này, hãy bỏ qua email.</p>
+        </div>
+        <div class="footer">
+            <div>Trân trọng,<br/>Admin Photocopy Shop</div>
+        </div>
     </div>
+</div>
 </body>
 </html>

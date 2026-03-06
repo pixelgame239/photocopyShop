@@ -1,10 +1,14 @@
 package com.photocopy.backend.security;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
@@ -33,5 +37,22 @@ public class JwtProvider {
     }
     public Claims parseToken(String token){
         return Jwts.parser().verifyWith(jwtSecretKey).build().parseSignedClaims(token).getPayload();
+    }
+    public String extractUserId(String token) {
+        Claims claims = parseToken(token);
+        return claims.getSubject();
+    }
+    public String extractRole(String token) {
+        Claims claims = parseToken(token);
+        return claims.get("role", String.class);
+    }
+    public Authentication getAuthentication(String token) {
+        Claims claims = parseToken(token);
+        String userId = claims.getSubject();
+        String role = claims.get("role", String.class);
+        if (userId ==null){
+            return null;
+        }
+        return new UsernamePasswordAuthenticationToken(userId, null, List.of(new SimpleGrantedAuthority("ROLE_" + role)));
     }
 }

@@ -48,6 +48,7 @@ jwt:
 logging:
   level:
     root: INFO # Mức chung cho toàn hệ thống
+    web: DEBUG # Xem chi tiết các request/response và lỗi mapping
     org.springframework.web: DEBUG # Xem chi tiết các request/response và lỗi mapping
     org.springframework.security: DEBUG # Nếu bạn có dùng Security (rất quan trọng để debug lỗi 401, 403)
     com.yourpackage.name: DEBUG # Thay bằng package của bạn để xem log từ code mình viết

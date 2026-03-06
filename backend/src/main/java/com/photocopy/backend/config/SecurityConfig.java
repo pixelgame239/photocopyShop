@@ -29,7 +29,12 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.csrf(csrf->csrf.disable())
         .cors(Customizer.withDefaults())
-        .authorizeHttpRequests(auth->auth.requestMatchers("/api/users/login", "/api/users/signup", "/api/users/refresh", "/api/users/sendVerification").permitAll().anyRequest().authenticated())
+        .authorizeHttpRequests(auth->auth
+            .requestMatchers("/api/users/login", "/api/users/signup", "/api/users/refresh", 
+            "/api/users/sendVerification", "/ws/**", "/api/chat/markAsRead/**", "/api/chat/getMessages/**", 
+            "/api/chat/getBoxChatStatus/**").permitAll()
+            .requestMatchers("/api/chat/staff/**").hasAnyRole("ADMIN", "STAFF")
+            .anyRequest().authenticated())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -37,7 +42,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:5173"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

@@ -15,4 +15,5 @@ public interface BoxChatRepository extends JpaRepository<BoxChat, Long> {
     List<BoxChat> findAllByOrderByLastUpdatedDesc();
     boolean existsByParticipantAndId(String participant, Long id);
     boolean existsByParticipantAndUserReadFalse(String participant);
+    void deleteByMessageTypeEquals(String messageType);
 }

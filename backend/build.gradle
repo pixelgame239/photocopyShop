@@ -19,6 +19,7 @@ repositories {
 }
 
 dependencies {
+	implementation("software.amazon.awssdk:s3:2.42.9")
 	implementation 'com.google.api-client:google-api-client:2.8.1'
 	implementation 'com.google.apis:google-api-services-gmail:v1-rev20240520-2.0.0'
 	implementation 'com.google.http-client:google-http-client-gson:2.1.0'

@@ -6,14 +6,16 @@ import com.photocopy.backend.entity.User;
 public class UserMapper {
     private UserMapper() {}
 
-    public static UserResponse toResponse(User user) {
+    public static UserResponse toResponse(User user, int cartItemCount) {
         return new UserResponse(
                 user.getId(),
                 user.getEmail(),
                 user.getRole(),
                 user.getFullName(),
                 user.getPhoneNumber(),
-                user.getUserPoint()
+                user.getUserPoint(),
+                user.isActive(),
+                cartItemCount
         );
     }
 }

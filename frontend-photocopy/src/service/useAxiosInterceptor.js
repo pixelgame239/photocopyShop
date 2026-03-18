@@ -15,7 +15,7 @@ export const useAxiosInterceptor = () => {
                     return Promise.reject(error);
                 }
 
-                if (error.response.status === 401) {
+                if ((error.response.status === 401 && error.response.data.message === "Refresh token missing") || error.response.status === 403) {
                     originalRequest._retry = true;
 
                     try {

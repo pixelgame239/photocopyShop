@@ -32,20 +32,30 @@ public class User {
     private String fullName;
     @Column(name = "phone_number")
     private String phoneNumber;
+    @Column(name = "address")
+    private String address;
+    @Column(name = "is_active", nullable = false)
     @Builder.Default
+    private boolean isActive = true;
     @Column(name="user_point")
+    @Builder.Default
     private int userPoint=0;
 
-    public void updateProfile(String fullName, String phoneNumber){
+    public void updateProfile(String fullName, String phoneNumber, String address){
         this.fullName= fullName;
         this.phoneNumber= phoneNumber;
+        this.address= address;
+    }
+
+    public void changeStatus(){
+        this.isActive = !this.isActive;
     }
 
     public void changePassword(String encodedPassword){
         this.password = encodedPassword;
     }
 
-    public void updateCoin(int amount){
+    public void updateUserPoint(int amount){
         this.userPoint += amount;
     }
 
@@ -68,7 +78,7 @@ public class User {
                 "id=" + id +
                 ", email='" + email + '\'' +
                 ", fullName='" + fullName + '\'' +
-                ", user point=" + userPoint + '\''+
+                ", userPoint=" + userPoint + '\''+
                 '}';
     }
 }

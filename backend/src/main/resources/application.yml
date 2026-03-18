@@ -16,6 +16,16 @@ spring:
   threads:
     virtual:
       enabled: true
+  data:
+    web:
+      pageable:
+        serialization-mode: via-dto
+        one-indexed-parameters: true
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 
   jpa:
     database: postgresql
@@ -57,3 +67,15 @@ google:
   client-id: ${GOOGLE_CLIENT_ID}
   client-secret: ${GOOGLE_CLIENT_SECRET}
   refresh-token: ${GOOGLE_REFRESH_TOKEN}
+
+supabase:
+  s3:
+    endpoint: ${SUPABASE_S3_ENDPOINT}
+    access-key: ${SUPABASE_S3_ACCESS_KEY}
+    secret-key: ${SUPABASE_S3_SECRET_KEY}
+    buckets:
+      products: products
+      orders: orders
+    region: ${SUPABASE_S3_REGION}
+    storage:
+      public-url-prefix: ${SUPABASE_S3_PUBLIC_URL_PREFIX}

@@ -6,7 +6,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.photocopy.backend.dto.request.SignupRequest;
@@ -24,7 +23,6 @@ public class EmailController {
     private final UserService userService;
 
     @PostMapping("/sendVerification")
-    @ResponseBody
     public ResponseEntity<?> sendVerification(@Valid @RequestBody SignupRequest request) {
         try {
             userService.preSignup(request);

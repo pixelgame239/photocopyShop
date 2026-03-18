@@ -8,5 +8,7 @@ public record UserResponse(
     UserRole role,
     String fullName,
     String phoneNumber,
-    int userPoint
+    int userPoint,
+    boolean isActive,
+    int cartItemCount
 ) {}

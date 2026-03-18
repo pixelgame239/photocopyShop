@@ -11,8 +11,8 @@ const Footer = () => {
           Photocopy Shop
         </a>
         <div className="information">
-          <p>📌 Address: Nam Tu Liem, Ha Noi</p>
-          <p>📞Phone number: 0111 111 111</p>
+          <p>📌 Địa chỉ: Nam Tu Liem, Ha Noi</p>
+          <p>📞 Số điện thoại: 0111 111 111</p>
           <div className="social-media">
             <a href="https://zalo.me/" target="_blank" rel="noreferrer">
               <div className="zalo-icon"></div>

@@ -40,11 +40,13 @@ const ChatBox = ({ onClose }) => {
   };
 
   useEffect(() => {
-    if(isAgent) {
-      setUnreadChat(boxChats.some(box => box && !box.staffRead));
-    }
-    else {
-      setUnreadChat(boxChats.some(box => box && !box.userRead));
+    if(boxChats) {
+      if(isAgent) {
+        setUnreadChat(boxChats.some(box => box && !box.staffRead));
+      }
+      else {
+        setUnreadChat(boxChats.some(box => box && !box.userRead));
+      }
     }
   }, [boxChats, isAgent]);
 const handleSend = () => {
@@ -128,7 +130,7 @@ const handleSend = () => {
           </button>
         </div>
         <div className="chat-body">
-          {isAgent ? (
+          {isAgent && boxChats ? (
             <div className="chat-columns">
               <div className="chat-users">
                 <div className="users-title">Cuộc trò chuyện</div>

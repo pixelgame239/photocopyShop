@@ -55,7 +55,7 @@
 .header-login-button{
     background-color: rgb(0, 123, 255);
 }
-.header-login-button:hover, .header-signup-button:hover, .header-profile-button:hover, .header-cart-button:hover{
+.header-login-button:hover, .header-signup-button:hover, .header-profile-button:hover, .header-cart-button:hover, .header-notification-button:hover{
     box-shadow: 0px 3px 10px 4px rgb(164, 164, 164);
     scale: 1.05;
 }
@@ -107,7 +107,7 @@
 .header-profile-dropdown-button.logout{
     color: rgb(255, 0, 0);
 }
-.header-cart-button{
+.header-cart-button, .header-notification-button{
     background-color: transparent;
     border: none;
     border-radius: 50%;
@@ -131,7 +131,7 @@
     align-items: center;
     font-size: 12px;
 }   
-.header-cart-button:hover{
+.header-cart-button:hover, .header-notification-button:hover{
     animation: shake 0.5s;
     animation-iteration-count: infinite;
 }
@@ -141,4 +141,12 @@
     50% { transform: rotate(0deg); }
     75% { transform: rotate(8deg); }
     100% { transform: rotate(0deg); }
+}
+.header-notification-button .notification-sign{
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
 }

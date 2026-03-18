@@ -51,6 +51,7 @@ export const UserProvider = ({children}) =>{
                         localStorage.setItem("userData", JSON.stringify({
                             role: "GUEST",
                             fullName: generateGuestName(),
+                            cartItemCount: 0,
                         }));
                     }
                     setUser(JSON.parse(localStorage.getItem("userData")));
@@ -61,6 +62,7 @@ export const UserProvider = ({children}) =>{
                     localStorage.setItem("userData", JSON.stringify({
                         role: "GUEST",
                         fullName: generateGuestName(),
+                        cartItemCount: 0,
                     }));
                 }                
                 setUser(JSON.parse(localStorage.getItem("userData")));
@@ -70,14 +72,15 @@ export const UserProvider = ({children}) =>{
         console.log("After setting user:", user);
     }, []);
         useEffect(() => {
+        if(!user) return;
         if (user && (user.role === "STAFF" || user.role === "ADMIN")) {
             fetchStaffBoxChat();
         } else if (user && (user.role === "USER" || user.role === "GUEST")) {
             fetchUserBoxChat();
         }
-    }, [user]);
+    }, [user?.role, user?.fullName]);
     useEffect(() => {
-        if(user){
+        if(user && user.role && user.fullName){
             const isAgent = user.role === "STAFF" || user.role === "ADMIN";
             connectWebSocket((msg) => {
                 if (msg.type === "READ_RECEIPT") {
@@ -124,7 +127,7 @@ export const UserProvider = ({children}) =>{
             }, user);
             return () => {disconnectWebSocket()};
         }
-    },[user]);
+    },[user?.role, user?.fullName]);
     return (
         <UserContext.Provider value={{ user, setUser, unreadChat, setUnreadChat, boxChats, setBoxChats, currentChatMessages, setCurrentChatMessages, fetchStaffBoxChat, fetchUserBoxChat, 
             incomingMessages, setIncomingMessages

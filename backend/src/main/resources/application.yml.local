@@ -2,13 +2,14 @@ server:
   port: 8080
 spring:
   datasource:
+    # Lấy thông tin từ .env hoặc biến môi trường hosting
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 5  # Giảm xuống 5 để tiết kiệm RAM
-      minimum-idle: 2
+      maximum-pool-size: 10
+      minimum-idle: 5
       idle-timeout: 300000
       max-lifetime: 1200000
       connection-timeout: 30000
@@ -22,7 +23,7 @@ spring:
         one-indexed-parameters: true
   servlet:
     multipart:
-      max-file-size: 10MB # Lưu ý: Cẩn thận nếu nhiều người up file 10MB cùng lúc server 256MB có thể tràn RAM
+      max-file-size: 10MB
     encoding:
       charset: UTF-8
       enabled: true
@@ -31,36 +32,40 @@ spring:
   jpa:
     database: postgresql
     hibernate:
-      ddl-auto: validate # An toàn cho Production. Nếu bạn CỐ TÌNH muốn nó tự tạo bảng, hãy để 'update', nhưng sau khi tạo xong phải đổi lại thành 'validate'
-    show-sql: false # BẮT BUỘC TẮT
+      # ddl-auto:
+      # - update: Tự động cập nhật bảng khi bạn sửa Entity Java (Dùng cho Local/Dev)
+      # - validate: Kiểm tra database, không tự ý sửa (Dùng cho Production)
+      ddl-auto: update 
+    show-sql: true # In câu lệnh SQL ra console để bạn theo dõi
     properties:
       hibernate:
         default_batch_fetch_size: 20
-        format_sql: false # BẮT BUỘC TẮT
-        highlight_sql: false # BẮT BUỘC TẮT
+        format_sql: true # Định dạng câu SQL cho dễ đọc
+        highlight_sql: true
+        # Tối ưu cho PostgreSQL 16+ (đi kèm với Spring 4)
         jdbc:
           batch_size: 20
           order_inserts: true
           order_updates: true
   web:
     error:
-      include-message: always 
+      include-message: always # Hiển thị thông báo lỗi chi tiết cho ReactJS dễ debug
 
+# Cấu hình cho thư viện JJWT của bạn
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
   refresh-expiration: ${JWT_REFRESH_EXPIRATION}
 
-# Đã đưa tất cả về INFO để bảo vệ RAM và CPU
+# Cấu hình log để dễ theo dõi lỗi SQL
 logging:
   level:
-    root: INFO 
-    web: INFO 
-    org.springframework.web: INFO 
-    org.springframework.security: INFO 
-    com.photocopy.backend: INFO # Giả sử đây là package của bạn
-    org.hibernate.orm.results: INFO 
-
+    root: INFO # Mức chung cho toàn hệ thống
+    web: DEBUG # Xem chi tiết các request/response và lỗi mapping
+    org.springframework.web: DEBUG # Xem chi tiết các request/response và lỗi mapping
+    org.springframework.security: DEBUG # Nếu bạn có dùng Security (rất quan trọng để debug lỗi 401, 403)
+    com.yourpackage.name: DEBUG # Thay bằng package của bạn để xem log từ code mình viết
+    org.hibernate.orm.results: DEBUG # Log chi tiết kết quả trả về từ Hibernate
 google:
   client-id: ${GOOGLE_CLIENT_ID}
   client-secret: ${GOOGLE_CLIENT_SECRET}

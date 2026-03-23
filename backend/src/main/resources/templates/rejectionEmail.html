@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Thông báo từ chối đơn hàng - Photocopy Shop</title>
+<style>
+    :root{
+        --primary:#1d74ff;
+        --card-bg:#ffffff;
+        --muted:#6b7280;
+    }
+    html,body{height:100%;margin:0;padding:0;font-family: 'Segoe UI', Roboto, Arial, sans-serif;}
+    .wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+    .card{width:100%;max-width:640px;background:var(--card-bg);border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.08);overflow:hidden}
+    .header{padding:20px 24px;background:var(--primary);display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--primary);font-weight:700;font-size:18px}
+    .title{font-size:18px;margin:0;color:#0f172a}
+    .subtitle{margin:0;color:black;font-size:13px}
+    .body{padding:28px 32px}
+    .greeting{font-size:16px;color:#0f172a;margin:0 0 8px}
+    .lead{color:var(--muted);margin:0 0 18px}
+    .reason{background:#f8fafc;padding:12px;border-radius:8px;color:#111;margin:12px 0}
+    .footer{padding:18px 32px;background:#f8fafc;color:var(--muted);font-size:13px}
+    @media (max-width:480px){.title{font-size:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+    <div class="card">
+        <div class="header">
+            <div>
+                <h1 class="title">Thông báo từ chối đơn hàng</h1>
+                <p class="subtitle">Photocopy Shop — Thông báo về đơn hàng của bạn</p>
+            </div>
+        </div>
+        <div class="body">
+            <p class="greeting">Xin chào,</p>
+            <p class="lead">Chúng tôi rất tiếc phải thông báo rằng đơn hàng <strong th:text="${orderId}"></strong> của bạn đã bị từ chối.</p>
+
+            <div class="reason">
+                <p><strong>Xin lỗi vì sự bất tiện này.</strong></p>
+                <p>Chúng tôi sẽ liên hệ với bạn sớm nhất có thể để thông báo lý do từ chối và hướng dẫn các bước tiếp theo nếu cần.</p>
+            </div>
+
+            <p class="lead">Nếu bạn cần hỗ trợ khẩn cấp, vui lòng trả lời email này hoặc liên hệ với bộ phận chăm sóc khách hàng của Photocopy Shop.</p>
+        </div>
+        <div class="footer">
+            <div>Trân trọng,<br/>Photocopy Shop</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

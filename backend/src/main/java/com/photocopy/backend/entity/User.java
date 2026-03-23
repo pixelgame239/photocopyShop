@@ -39,10 +39,9 @@ public class User {
     private boolean isActive = true;
     @Column(name="user_point")
     @Builder.Default
-    private int userPoint=0;
+    private Long userPoint=0L;
 
-    public void updateProfile(String fullName, String phoneNumber, String address){
-        this.fullName= fullName;
+    public void updateProfile(String phoneNumber, String address){
         this.phoneNumber= phoneNumber;
         this.address= address;
     }
@@ -55,10 +54,12 @@ public class User {
         this.password = encodedPassword;
     }
 
-    public void updateUserPoint(int amount){
-        this.userPoint += amount;
+    public void updateUserPoint(Long amount){
+        this.userPoint = amount;
     }
-
+    public void updateAddress(String address){
+        this.address = address;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

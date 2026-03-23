@@ -1,6 +1,8 @@
 package com.photocopy.backend.service.impl;
 
 import java.time.Instant;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,11 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.photocopy.backend.constant.UserRole;
 import com.photocopy.backend.dto.request.SignupRequest;
+import com.photocopy.backend.dto.request.UpdateUserRequest;
 import com.photocopy.backend.dto.response.AuthResponse;
 import com.photocopy.backend.dto.response.UserResponse;
 import com.photocopy.backend.entity.RefreshToken;
+import com.photocopy.backend.entity.ResetPassword;
 import com.photocopy.backend.entity.PendingSignup;
 import com.photocopy.backend.entity.User;
+import com.photocopy.backend.exception.BadRequestException;
 import com.photocopy.backend.exception.ConflictException;
 import com.photocopy.backend.exception.InternalServerException;
 import com.photocopy.backend.exception.NotFoundException;
@@ -24,6 +29,7 @@ import com.photocopy.backend.exception.UnauthorizedException;
 import com.photocopy.backend.mapper.UserMapper;
 import com.photocopy.backend.repository.UserRepository;
 import com.photocopy.backend.repository.PendingSignupRepository;
+import com.photocopy.backend.repository.ResetPasswordRepository;
 import com.photocopy.backend.repository.UserCartRepository;
 import com.photocopy.backend.security.JwtProvider;
 import com.photocopy.backend.service.EmailService;
@@ -46,8 +52,46 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
     private final PendingSignupRepository pendingSignupRepository;
     private final UserCartRepository userCartRepository;
+    private final ResetPasswordRepository resetPasswordRepository;
 
     private static final long OTP_EXPIRATION_SECONDS = 5 * 60; 
+
+    @Override
+    @Transactional
+    public void sendResetPasswordEmail(UpdateUserRequest request) {
+        String email = request.getEmail();
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        String resetToken = "";
+        if (userOptional.isPresent()) {
+            resetToken = UUID.randomUUID().toString();
+            Instant expiry = Instant.now().plusSeconds(OTP_EXPIRATION_SECONDS);
+            resetPasswordRepository.deleteByEmail(email);
+            ResetPassword resetPassword = ResetPassword.builder()
+                .email(email)
+                .resetToken(resetToken)
+                .expiresAt(expiry)
+                .build();
+                resetPasswordRepository.save(resetPassword);
+        }
+        try {
+            emailService.sendResetPasswordEmail(email, resetToken);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new InternalServerException("Không thể gửi email đặt lại mật khẩu. Vui lòng thử lại sau.");
+        }
+    }
+
+    @Override
+    @Transactional
+    public boolean verifyResetToken(String token) {
+        ResetPassword resetPassword = resetPasswordRepository.findByResetToken(token)
+            .orElseThrow(() -> new NotFoundException("Mã đặt lại mật khẩu không hợp lệ."));
+        if (resetPassword.isExpired()) {
+            resetPasswordRepository.delete(resetPassword);
+            throw new BadRequestException("Mã đặt lại mật khẩu đã hết hạn. Vui lòng yêu cầu mã mới.");
+        }
+        return true;
+    }
 
     @Override
     @Transactional
@@ -116,25 +160,20 @@ public class UserServiceImpl implements UserService {
         int cartItemCount = userCartRepository.countByUserId(savedUser.getId());
         return new AuthResponse(token, refreshToken.getToken(), UserMapper.toResponse(savedUser, cartItemCount));
     }
-
     @Override
-    public UserResponse getUserById(Long id){
-        User user = userRepository.findById(id).orElseThrow(()->new RuntimeException("Unexpected Error"));
-        return UserMapper.toResponse(user, userCartRepository.countByUserId(id));
-    }
-    @Override
+    @Transactional
     public AuthResponse login(LoginRequest request){
         if(loginAttemptService.isBlocked(request.getEmail())) {
-            throw new UnauthorizedException("Tài khoản bị khóa do đăng nhập sai quá nhiều lần. Vui lòng thử lại sau ít phút.");
+            throw new BadRequestException("Tài khoản bị khóa do đăng nhập sai quá nhiều lần. Vui lòng thử lại sau ít phút.");
         }
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(()-> new UnauthorizedException("Tài khoản hoặc mật khẩu không đúng"));
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(()-> new BadRequestException("Tài khoản hoặc mật khẩu không đúng"));
         if (!user.isActive()) {
-            throw new UnauthorizedException("Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ hỗ trợ để biết thêm chi tiết.");
+            throw new BadRequestException("Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ hỗ trợ để biết thêm chi tiết.");
         }
         boolean matchedPassword = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if(!matchedPassword){
             loginAttemptService.loginFailed(request.getEmail());
-            throw new UnauthorizedException("Tài khoản hoặc mật khẩu không đúng");
+            throw new BadRequestException("Tài khoản hoặc mật khẩu không đúng");
         }
         loginAttemptService.loginSucceeded(request.getEmail());
         String token = jwtProvider.generateToken(user.getId(), user.getEmail(), user.getRole().name());
@@ -144,6 +183,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public AuthResponse refresh(String token) {
         RefreshToken oldToken = refreshTokenService.verify(token);
         RefreshToken newToken = refreshTokenService.rotate(oldToken);
@@ -162,6 +202,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void logout(String token) {
         RefreshToken refreshToken = refreshTokenService.verify(token);
         refreshTokenService.revoke(refreshToken);
@@ -178,6 +219,7 @@ public class UserServiceImpl implements UserService {
         });
     }
     @Override
+    @Transactional
     public void changeUserStatus(Long userId, Authentication authentication) {
         if(authentication.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             throw new UnauthorizedException("Unauthorized: You do not have permission to perform this action");
@@ -188,6 +230,7 @@ public class UserServiceImpl implements UserService {
      }
 
      @Override
+     @Transactional
      public UserResponse createNewStaff(SignupRequest request, Authentication authentication) {
          if(authentication.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
              throw new UnauthorizedException("Unauthorized: You do not have permission to perform this action");
@@ -208,6 +251,7 @@ public class UserServiceImpl implements UserService {
       }
 
       @Override
+      @Transactional
       public void deleteUser(Long userId, Authentication authentication) {
         if(authentication.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             throw new UnauthorizedException("Unauthorized: You do not have permission to perform this action");
@@ -215,4 +259,39 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
         userRepository.delete(user);
       }
+
+      @Override
+      @Transactional
+      public void updateUserProfile(UpdateUserRequest request, Authentication authentication) {
+        if(authentication == null || !authentication.isAuthenticated()|| authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_GUEST"))) {
+            throw new UnauthorizedException("Unauthorized: You must be authenticated to update your profile");
+        }
+        User user = userRepository.findById(Long.parseLong(authentication.getName())).orElseThrow(() -> new NotFoundException("User not found"));
+        user.updateProfile(request.getPhoneNumber(), request.getAddress());
+        userRepository.save(user);
+      }
+
+      @Override
+      @Transactional
+      public void changePassword(UpdateUserRequest request, Authentication authentication) {
+        if(authentication == null || !authentication.isAuthenticated()|| authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_GUEST"))) {
+            if(verifyResetToken(request.getResetToken())) {
+                User user = userRepository.findByEmail(resetPasswordRepository.findByResetToken(request.getResetToken()).get().getEmail())
+                    .orElseThrow(() -> new NotFoundException("User not found"));
+                String encodedNewPassword = passwordEncoder.encode(request.getNewPassword());
+                user.changePassword(encodedNewPassword);
+                userRepository.save(user);
+                resetPasswordRepository.deleteByEmail(user.getEmail());
+                return;
+            }
+            throw new UnauthorizedException("Unauthorized: Invalid reset token");
+        }
+        User user = userRepository.findById(Long.parseLong(authentication.getName())).orElseThrow(() -> new NotFoundException("User not found"));
+        if(!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new ConflictException("Mật khẩu hiện tại không đúng");
+        }
+        String encodedNewPassword = passwordEncoder.encode(request.getNewPassword());
+        user.changePassword(encodedNewPassword);
+        userRepository.save(user);
+    }
 }

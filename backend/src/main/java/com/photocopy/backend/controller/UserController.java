@@ -5,9 +5,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.photocopy.backend.dto.request.LoginRequest;
 import com.photocopy.backend.dto.request.SignupRequest;
+import com.photocopy.backend.dto.request.UpdateUserRequest;
 import com.photocopy.backend.dto.response.AuthResponse;
-import com.photocopy.backend.dto.response.UserResponse;
-import com.photocopy.backend.exception.UnauthorizedException;
+import com.photocopy.backend.exception.BadRequestException;
 import com.photocopy.backend.service.UserService;
 import com.photocopy.backend.utils.CookieService;
 
@@ -15,10 +15,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -48,11 +48,6 @@ public class UserController {
         );
         return ResponseEntity.status(201).body(responseBody);
     }
-
-    @GetMapping("/{id}")
-    public UserResponse getUser(@PathVariable Long id) {
-        return userService.getUserById(id);
-    }
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
         AuthResponse authResponse = userService.login(request);
@@ -68,7 +63,7 @@ public class UserController {
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refresh(@CookieValue(value = "refresh_token", required = false) String token, HttpServletResponse response) {
         if (token == null) {
-            throw new UnauthorizedException("Refresh token missing");
+            throw new BadRequestException("Refresh token missing");
         }
         AuthResponse authResponse = userService.refresh(token);
         cookieService.addRefreshTokenCookie(response, authResponse.refreshToken());
@@ -82,10 +77,28 @@ public class UserController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@AuthenticationPrincipal Long userId, @CookieValue(value = "refresh_token", required = false) String token, HttpServletResponse response) {
         if (token == null) {
-            throw new UnauthorizedException("Refresh token missing");
+            throw new BadRequestException("Refresh token missing");
         }
         userService.logout(token);
         cookieService.clearRefreshTokenCookie(response);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/updateProfile")
+    public ResponseEntity<Void> updateProfile(@RequestBody UpdateUserRequest request, Authentication authentication) {
+        userService.updateUserProfile(request, authentication);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/changePassword")
+    public ResponseEntity<Void> changePassword(@RequestBody UpdateUserRequest request, Authentication authentication) {
+        userService.changePassword(request, authentication);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/sendResetPasswordEmail")
+    public ResponseEntity<Void> sendResetPasswordEmail(@RequestBody UpdateUserRequest request) {
+        userService.sendResetPasswordEmail(request);
         return ResponseEntity.ok().build();
     }
 }

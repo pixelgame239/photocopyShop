@@ -1,7 +1,5 @@
 package com.photocopy.backend.entity;
 
-import com.google.auto.value.AutoValue.Builder;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,6 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "user_cart")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Builder
 public class UserCart {
     @Id
@@ -32,4 +33,8 @@ public class UserCart {
     private Product product;
     @Column(nullable = false)
     private int quantity;    
+
+    public void changeQuantity(int newQuantity) {
+        this.quantity = newQuantity;
+    }
 }

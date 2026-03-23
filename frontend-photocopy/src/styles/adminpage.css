@@ -52,10 +52,7 @@ textarea{min-height:80px}
 .hint{font-size:12px;color:var(--muted);margin-top:6px}
 .admin-form-actions{display:flex;justify-content:flex-end;margin-top:12px;gap:8px}
 
-/* Buttons */
-.btn{padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-weight:600}
-.btn:hover{transform:translateY(-1px)}
-.btn:focus{outline:3px solid rgba(14,165,164,0.12)}
+/* Buttons: base styles moved to src/styles/base.css; keep admin variants below */
 .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-600));color:#fff;border:0}
 .btn.danger{background:transparent;border:1px solid rgba(239,68,68,0.14);color:var(--danger)}
 .btn.toggle{padding:6px 10px;border-radius:8px;font-weight:600}
@@ -85,4 +82,30 @@ tbody tr:hover{background:#fbfbfb}
 @media (max-width:720px){
   .admin-form-grid{grid-template-columns:1fr}
   aside{display:none}
+}
+
+/* Admin layout improvements */
+.admin-layout{display:flex;gap:20px;padding:20px}
+.admin-sidebar{width:220px;border-right:1px solid var(--border);padding-right:12px}
+.admin-main{flex:1}
+.admin-brand h3{margin:0 0 12px 0}
+.admin-nav{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+
+.dashboard-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.dashboard-header h2{margin:0 0 6px 0}
+.dashboard-sub{color:var(--muted);margin:0}
+
+.dashboard-card{display:flex;align-items:center;gap:12px;flex:1;min-width:180px;padding:16px;border-radius:12px;background:linear-gradient(180deg,#ffffff,#f8fdff);border:1px solid var(--border);box-shadow:0 8px 28px rgba(2,6,23,0.04)}
+.dashboard-card .card-icon{width:48px;height:48px;border-radius:10px;background:linear-gradient(180deg,#f0f7ff,#f7fbff);display:flex;align-items:center;justify-content:center;font-size:22px}
+.dashboard-card .count{font-size:18px;font-weight:700;color:#0f172a}
+.dashboard-card .label{font-size:13px;color:var(--muted)}
+
+.dashboard-widgets{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-top:14px}
+.widget.card{padding:14px;border-radius:10px;background:#fff;border:1px solid var(--border)}
+.widget-title{margin:0 0 8px 0;font-size:15px}
+.widget-body{font-size:13px}
+
+@media (max-width:900px){
+  .dashboard-widgets{grid-template-columns:1fr}
+  .dashboard-card{min-width:150px}
 }

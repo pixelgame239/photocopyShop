@@ -1,11 +1,25 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, use } from 'react';
 import '../styles/adminpage.css';
 import '../styles/productsPage.css';
-import AdminTable from './AdminTable';
+import AdminTable from '../components/AdminTable';
 import { TabContext } from '../context/TabContext';
+import adminApi from '../api/admin.api';
 
 const AdminPage = () => {
   const { setCurrentTab } = useContext(TabContext);
+  const [dashboardStats, setDashboardStats] = useState(null);
+    useEffect(() => {
+    const fetchDashboardStats = async () => {
+      try {
+        const response = await adminApi.getDashboardStats();
+        setDashboardStats(response.data);
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+      }
+    };
+
+    fetchDashboardStats();
+  }, []);
   useEffect(() => {
     setCurrentTab('admin');
   }, [setCurrentTab]);
@@ -17,18 +31,21 @@ const AdminPage = () => {
     { key: 'users', label: 'Người dùng' },
   ];
   const [selected, setSelected] = useState(nav[0]);
+  const formatCurrency = (v) => v.toLocaleString('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 });
 
   return (
-    <div style={{ display: 'flex', gap: 20, padding: 20 }}>
-      <aside style={{ width: 220, borderRight: '1px solid #eee', paddingRight: 12 }}>
-        <h3 style={{ marginTop: 0 }}>Admin</h3>
+    <div className="admin-layout">
+      <aside className="admin-sidebar">
+        <div className="admin-brand">
+          <h3>Admin</h3>
+        </div>
         <nav>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
+          <ul className="admin-nav">
             {nav.map((n) => (
-              <li key={n.key} style={{ marginBottom: 8 }}>
+              <li key={n.key}>
                 <button
                   onClick={() => setSelected(n)}
-                  className={`nav-btn ${selected === n ? 'active' : ''}`}
+                  className={`nav-btn ${selected.key === n.key ? 'active' : ''}`}
                 >
                   {n.label}
                 </button>
@@ -38,31 +55,75 @@ const AdminPage = () => {
         </nav>
       </aside>
 
-      <main style={{ flex: 1 }}>
+      <main className="admin-main">
         {selected.key === 'dashboard' ? (
           <div>
-            <h2>Dashboard</h2>
+            <div className="dashboard-header">
+              <h2>Bảng điều khiển</h2>
+              <p className="dashboard-sub">Tổng quan nhanh về hoạt động cửa hàng</p>
+            </div>
+
             <div className="dashboard-cards">
               <div className="dashboard-card">
-                <div className="count">{}</div>
-                <div className="label">Categories</div>
+                <div className="card-icon">💰</div>
+                <div>
+                  <div className="count">{formatCurrency(dashboardStats?.revenue || 0)}</div>
+                  <div className="label">Doanh thu</div>
+                </div>
               </div>
+
               <div className="dashboard-card">
-                <div className="count">{}</div>
-                <div className="label">Products</div>
+                <div className="card-icon">🛒</div>
+                <div>
+                  <div className="count">{dashboardStats?.totalOrders || 0}</div>
+                  <div className="label">Số đơn hàng mới trong vòng 24h</div>
+                </div>
               </div>
+
               <div className="dashboard-card">
-                <div className="count">{}</div>
-                <div className="label">Orders</div>
+                <div className="card-icon">👥</div>
+                <div>
+                  <div className="count">{dashboardStats?.totalUsers || 0}</div>
+                  <div className="label">Số người dùng</div>
+                </div>
               </div>
-              <div className="dashboard-card">
-                <div className="count">{}</div>
-                <div className="label">Users</div>
+            </div>
+
+            <div className="dashboard-widgets">
+              <div className="widget card">
+                <h3 className="widget-title">Số đơn hàng chờ xử lý</h3>
+                <div className="widget-body hint">{dashboardStats?.pendingOrders || 0} đơn hàng</div>
+              </div>
+
+              <div className="widget card">
+                <h3 className="widget-title">Sản phẩm sắp hết hàng</h3>
+                <div className="widget-body">
+                  {dashboardStats?.lowStockProducts?.length === 0 ? (
+                    <div className="hint">Không có sản phẩm nào sắp hết hàng</div>
+                  ) : (
+                    <div className="lowstock-list">
+                      {dashboardStats?.lowStockProducts?.map((p) => (
+                        <div key={p.productId} className="lowstock-item card">
+                          <img
+                            src={p.imageUrl}
+                            alt={p.productName}
+                            className="lowstock-thumb"
+                            style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 6 }}
+                          />
+                          <div className="lowstock-info">
+                            <div className="lowstock-name">{p.productName}</div>
+                            <div className="lowstock-qty">Còn: {p.stock}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         ) : (
-          <AdminTable currentTable = {selected} />
+          <AdminTable currentTable={selected} />
         )}
       </main>
     </div>

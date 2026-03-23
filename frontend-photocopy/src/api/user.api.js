@@ -8,8 +8,11 @@ export const userApi = {
     sendVerification(data){
         return axiosClient.post('/users/sendVerification', data);
     },
-    getUserById(id){
-        return axiosClient.get(`/users/${id}`);
+    updateProfile(data){
+        return axiosClient.patch('/users/updateProfile', data);
+    },
+    changePassword(data){
+        return axiosClient.patch('/users/changePassword', data);
     },
     login(data){
         localStorage.removeItem("userData");
@@ -21,5 +24,7 @@ export const userApi = {
     refreshToken(){
         return axiosClient.post('/users/refresh');
     },
-
+    sendResetPasswordEmail(email){
+        return axiosClient.post('/users/sendResetPasswordEmail', { email: email });
+    }
 }

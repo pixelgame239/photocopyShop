@@ -1,5 +1,6 @@
 package com.photocopy.backend.repository;
 
+import com.photocopy.backend.constant.UserRole;
 import com.photocopy.backend.entity.User;
 
 import org.springframework.data.domain.Page;
@@ -12,7 +13,9 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findById(Long id);
     Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
     Page<User> findAll(Pageable pageable);
+    Long countByRoleEquals(UserRole role);
 }

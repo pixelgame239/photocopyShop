@@ -21,9 +21,11 @@ import com.photocopy.backend.dto.request.CategoryRequest;
 import com.photocopy.backend.dto.request.ProductRequest;
 import com.photocopy.backend.dto.request.SignupRequest;
 import com.photocopy.backend.dto.response.CategoryResponse;
+import com.photocopy.backend.dto.response.DashboardResponse;
 import com.photocopy.backend.dto.response.ProductResponse;
 import com.photocopy.backend.dto.response.UserResponse;
 import com.photocopy.backend.service.CategoryService;
+import com.photocopy.backend.service.OrdersService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,14 @@ public class AdminController {
     private final ProductService productService;
     private final CategoryService categoryService;
     private final UserService userService;
+    private final OrdersService ordersService;
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<DashboardResponse> getDashboardStats(Authentication authentication) {
+        DashboardResponse dashboardStats = ordersService.getDashboardStats(authentication);
+        return ResponseEntity.ok(dashboardStats);
+    }
+
     @PostMapping("/category/create")
     public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest categoryRequest, Authentication authentication) {
         CategoryResponse createdCategory = categoryService.createCategory(categoryRequest, authentication);
@@ -87,5 +97,11 @@ public class AdminController {
     public ResponseEntity<?> deleteUser(@PathVariable Long userId, Authentication authentication) {
         userService.deleteUser(userId, authentication);
         return ResponseEntity.ok("User deleted successfully");
+    }
+
+    @DeleteMapping("/orders/delete/{orderId}")
+    public ResponseEntity<?> deleteOrder(@PathVariable Long orderId, Authentication authentication) {
+        ordersService.deleteOrder(orderId, authentication);
+        return ResponseEntity.ok("Order deleted successfully");
     }
 }

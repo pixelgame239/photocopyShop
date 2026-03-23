@@ -22,6 +22,8 @@ spring:
         serialization-mode: via-dto
         one-indexed-parameters: true
   servlet:
+    multipart:
+      max-file-size: 10MB
     encoding:
       charset: UTF-8
       enabled: true
@@ -37,6 +39,7 @@ spring:
     show-sql: true # In câu lệnh SQL ra console để bạn theo dõi
     properties:
       hibernate:
+        default_batch_fetch_size: 20
         format_sql: true # Định dạng câu SQL cho dễ đọc
         highlight_sql: true
         # Tối ưu cho PostgreSQL 16+ (đi kèm với Spring 4)

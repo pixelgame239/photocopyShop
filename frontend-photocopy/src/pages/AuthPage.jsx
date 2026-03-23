@@ -152,6 +152,17 @@ const AuthPage = ({ authMethod }) => {
           </button>
         </form>
 
+        {authMethod === 'login' && (
+          <div className="auth-forgot-wrapper" style={{textAlign: 'center', marginTop: '0.5rem'}}>
+            <span
+              onClick={() => nav('/forgotPassword')}
+              style={{ cursor: 'pointer', color: '#3b82f6', textDecoration: 'underline', fontSize: '0.95rem' }}
+            >
+              Quên mật khẩu?
+            </span>
+          </div>
+        )}
+
         <div className="auth-switch-mode">
           <span
             onClick={() =>

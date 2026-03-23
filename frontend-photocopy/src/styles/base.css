@@ -1,0 +1,39 @@
+/* Shared base styles to avoid duplicate component rules across pages */
+:root{
+  --btn-padding: 8px 12px;
+  --btn-radius: 8px;
+  --btn-font-size:14px;
+  --primary:#007bff;
+  --danger:#ff4d4f;
+  --muted:#6b7280;
+}
+
+/* Buttons - base */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:var(--btn-padding);
+  border-radius:var(--btn-radius);
+  text-decoration:none;
+  cursor:pointer;
+  font-weight:700;
+  font-size:var(--btn-font-size);
+  transition:transform .12s ease,box-shadow .12s ease,opacity .12s ease;
+  border:1px solid transparent;
+  background:transparent;
+  color:inherit;
+}
+.btn:disabled{opacity:0.6;cursor:not-allowed}
+
+.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn-danger{background:var(--danger);color:#fff;border-color:var(--danger)}
+.btn-ghost{background:transparent;border:1px solid #e6e6e6;color:inherit}
+
+/* Modal - basic shared pieces */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:1000;padding:18px}
+.modal-window{background:#fff;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,0.12);max-height:90vh;overflow:auto}
+
+/* Table baseline reset */
+table{border-collapse:collapse;border-spacing:0}
+th, td{padding:8px}

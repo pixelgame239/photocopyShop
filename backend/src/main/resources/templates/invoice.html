@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hóa đơn - PhotocopyShop</title>
+  <style>
+    body{font-family: 'Roboto', Arial,Helvetica,sans-serif;color:#222;padding:20px}
+    header{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+    h1{margin:0}
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th,td{border:1px solid #ddd;padding:8px;text-align:left}
+    th{background:#f6f6f6}
+    .totals{margin-top:12px;text-align:right}
+    .meta{margin-top:6px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>PhotocopyShop</h1>
+    <div>Địa chỉ: Nam Từ Liêm, Hà Nội</div>
+    <div>Điện thoại: 0111111111</div>
+  </header>
+
+  <section class="meta">
+    <div>Ngày: <span th:text="${orderDate}">--</span></div>
+    <div>Hình thức nhận hàng: <span th:text="${orderType==DELIVERY ? 'Giao hàng' : 'Nhận tại cửa hàng'}">--</span></div>
+    <div>Địa chỉ giao hàng: <span th:text="${address}">--</span></div>
+    <div>Hình thức thanh toán: <span th:text="${paymentOption==CASH ? 'Tiền mặt' : 'Chuyển khoản'}">--</span></div>
+  </section>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Sản phẩm</th>
+        <th style="width:80px">Số lượng</th>
+        <th style="width:120px">Đơn giá</th>
+        <th style="width:120px">Thành tiền</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="it : ${items}">
+        <td th:text="${it.product.productName}">Sản phẩm</td>
+        <td th:text="${it.quantity}">0</td>
+        <td th:text="${it.product.price}">0</td>
+        <td th:text="${it.product.price * it.quantity}">0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="totals">
+    <div>Tạm tính: <span th:text="${totalAmount+discount}">0</span></div>
+    <div>Giảm (điểm): <span th:text="${discount}">0</span></div>
+    <div><strong>Tổng phải trả: <span th:text="${totalAmount}">0</span></strong></div>
+  </div>
+
+  <footer style="margin-top:18px;text-align:center;color:#666">Cảm ơn quý khách đã sử dụng dịch vụ PhotocopyShop.</footer>
+</body>
+</html>

@@ -1,9 +1,10 @@
 import React, { use, useEffect, useState } from 'react';
-import Pagination from '../components/Pagination';
+import Pagination from './Pagination';
 import '../styles/adminpage.css';
 import '../styles/productsPage.css';
 import productApi from '../api/product.api';
-import AdminModal from '../components/AdminModal';
+import AdminModal from './AdminModal';
+import OrderDetails from './OrderDetails';
 import adminApi from '../api/admin.api';
 
 function isImageUrl(val) {
@@ -28,6 +29,8 @@ const AdminTable = ({ currentTable }) => {
   const [showUserToggle, setShowUserToggle] = useState(false);
   const [assetVersion, setAssetVersion] = useState(Date.now()); 
   const [allUsers, setAllUsers] = useState([]);
+  const [viewOpen, setViewOpen] = useState(false);
+  const [viewOrder, setViewOrder] = useState(null);
   const tableConfig = {
     category: [
       { key: 'id', label: 'ID', type: 'value' },
@@ -53,10 +56,26 @@ const AdminTable = ({ currentTable }) => {
       { key: 'phoneNumber', label: 'Số điện thoại', type: 'text' },
       { key: 'userPoint', label: 'Điểm', type: 'value' },
       { key: 'isActive', label: 'Trạng thái', type: 'value' }
+    ],
+    orders:[
+        { key: 'id', label: 'ID', type: 'value' },
+        { key: 'fullName', label: 'Tên người đặt', type: 'value' },
+        { key: 'phoneNumber', label: 'Số điện thoại', type: 'value' },
+        { key: 'address', label: 'Địa chỉ nhận hàng', type: 'value' },
+        { key: 'totalAmount', label: 'Tổng tiền', type: 'value' },
+        { key: 'discount', label: 'Giảm giá', type: 'value' },
+        { key: 'paymentOption', label: 'Phương thức thanh toán', type: 'value' },
+        { key: 'orderType', label: 'Loại đơn', type: 'value' },
+        { key: 'status', label: 'Trạng thái', type: 'value' },
+        { key: 'orderDate', label: 'Ngày đặt', type: 'value' },
     ]
   };
   useEffect(()=>{
-    setColumns(tableConfig[currentTable.key] || []);
+    const rawCols = tableConfig[currentTable.key] || [];
+    const mapped = rawCols.map((c) => {
+      return c;
+    });
+    setColumns(mapped);
     setTitle(currentTable.label || '');
     const fetchTables = async () => {
       setAssetVersion(Date.now());
@@ -74,8 +93,15 @@ const AdminTable = ({ currentTable }) => {
         }
         else if(currentTable.key === 'users') {
           response = await adminApi.getUsers(currentPage,10);
-          setShowUserToggle(true);
           setAllUsers(response.data.content || response.data || []);
+        }
+        else if(currentTable.key === 'orders') {
+          response = await adminApi.getAllOrders(currentPage,10);
+        }
+        if(currentTable.key === 'users') {
+          setShowUserToggle(true);
+        } else {
+          setShowUserToggle(false);
         }
         setItems(response.data.content || response.data || []);
         if(response.data.page && response.data.page.totalPages){
@@ -148,6 +174,16 @@ const AdminTable = ({ currentTable }) => {
     reader.readAsDataURL(file);
   }
 
+  function openView(item) {
+    setViewOrder(item);
+    setViewOpen(true);
+  }
+
+  function closeView() {
+    setViewOrder(null);
+    setViewOpen(false);
+  }
+
   async function handleSave(ev) {
     if (ev && ev.preventDefault) ev.preventDefault();
     let payload;
@@ -216,6 +252,8 @@ const AdminTable = ({ currentTable }) => {
         await adminApi.deleteProduct(id);
       } else if(currentTable.key === 'users') {
         await adminApi.deleteUser(id);
+      } else if(currentTable.key === 'orders') {
+        await adminApi.deleteOrder(id);
       }
       setItems((prev) => prev.filter((it) => it.id !== id));
     }
@@ -291,7 +329,7 @@ const AdminTable = ({ currentTable }) => {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              {columns&&columns.filter(c=> c.key !== 'categoryId' && c.key !== 'password').map((c) => <th key={c.key} style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #eee' }}>{c.label}</th>)}
+                {columns&&columns.filter(c=> c.key !== 'categoryId' && c.key !== 'password').map((c) => <th key={c.key} style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #eee' }}>{c.label}</th>)}
               <th style={{ padding: 8, borderBottom: '1px solid #eee' }}></th>
             </tr>
           </thead>
@@ -303,11 +341,22 @@ const AdminTable = ({ currentTable }) => {
               <tr key={it.id}>
                 {columns&&columns.filter(c=> c.key !== 'categoryId' && c.key !== 'password').map((c) => (
                   <td key={c.key} style={{ padding: 8, borderBottom: '1px solid #f7f7f7', verticalAlign: 'middle' }}>
-                    {c.key && ((c.key === 'imageFile' || (it[c.key] && isImageUrl(it[c.key]))) ? (
-                      isImageUrl(it[c.key]) ? <img src={` ${it[c.key]}?v=${assetVersion}`} alt="" style={{ width: 60, height: 60, objectFit: "contain" }} /> : String(it[c.key])
-                    ) : (
-                      it[c.key] !== undefined ? String(it[c.key]) : '-'
-                    ))}
+                    {(() => {
+                      const val = it[c.key];
+                      if (!c.key) return '-';
+                      if (c.key === 'imageFile' || (val && isImageUrl(val))) {
+                        return isImageUrl(val) ? <img src={`${val}?v=${assetVersion}`} alt="" style={{ width: 60, height: 60, objectFit: "contain" }} /> : String(val);
+                      }
+                      if (c.key.toLowerCase().includes('date') && val) {
+                        try {
+                          const d = new Date(val);
+                          return d.toLocaleString();
+                        } catch (e) {
+                          return String(val);
+                        }
+                      }
+                      return val !== undefined && val !== null ? String(val) : '-';
+                    })()}
                   </td>
                 ))}
                 {currentTable.key === 'users' ? (
@@ -316,7 +365,7 @@ const AdminTable = ({ currentTable }) => {
                     <button className="btn danger" onClick={() => handleDelete(it.id)} style={{ marginLeft: 8 }}>Xóa</button>
                   </td>
                 ) :<td style={{ padding: 8 }}>
-                  <button className="btn" onClick={() => openEdit(it)}>Sửa</button>
+                  {currentTable.key !== 'orders' ? <button className="btn" onClick={() => openEdit(it)}>Sửa</button>: <button className="btn" onClick={() => openView(it)}>Xem</button>}
                   <button className="btn danger" onClick={() => handleDelete(it.id)} style={{ marginLeft: 8 }}>Xóa</button>
                 </td>}
               </tr>
@@ -324,6 +373,20 @@ const AdminTable = ({ currentTable }) => {
           </tbody>
         </table>
       </div>
+
+      {viewOpen && viewOrder && (
+        <div className="modal-overlay">
+          <div className="modal-card">
+            <h3>Chi tiết đơn hàng: {viewOrder.id}</h3>
+            <div style={{ maxHeight: '60vh', overflow: 'auto' }}>
+              <OrderDetails order={viewOrder} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
+              <button className="btn btn-primary" onClick={closeView}>Đóng</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div style={{ marginTop: 12, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={(p) => setCurrentPage(p)} />

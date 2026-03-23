@@ -17,6 +17,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.photocopy.backend.security.JwtAuthenticationFilter;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -29,11 +30,18 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.csrf(csrf->csrf.disable())
         .cors(Customizer.withDefaults())
+        .exceptionHandling(ex->ex.authenticationEntryPoint((request, response, authException)->{
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"message\": \"Unauthorized\", \"status\": 401}");        
+        }))
         .authorizeHttpRequests(auth->auth
             .requestMatchers("/api/users/login", "/api/users/signup", "/api/users/refresh", 
             "/api/users/sendVerification", "/ws/**", "/api/chat/markAsRead/**", "/api/chat/getMessages/**", 
-            "/api/chat/getBoxChatStatus/**", "/api/category/**", "/api/product/**").permitAll()
-            .requestMatchers("/api/chat/staff/**").hasAnyRole("ADMIN", "STAFF")
+            "/api/chat/getBoxChatStatus/**", "/api/category/**", "/api/product/**", "/api/users/sendResetPasswordEmail", "/api/users/changePassword").permitAll()
+            .requestMatchers("/api/orders/changeOrderStatus", "/api/orders/exportInvoice/**", "/api/orders/getOrdersStatus").hasAnyRole("ADMIN", "STAFF", "USER")
+            .requestMatchers("/api/cart/**", "/api/orders/generateQRCode", "/api/users/updateProfile", "/api/orders/getUserOrders").hasRole("USER")
+            .requestMatchers("/api/chat/staff/**", "/api/orders/getAllOrders").hasAnyRole("ADMIN", "STAFF")
             .requestMatchers("/api/admin/**").hasRole("ADMIN")
             .anyRequest().authenticated())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

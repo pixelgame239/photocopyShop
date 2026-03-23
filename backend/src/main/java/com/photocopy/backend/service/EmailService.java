@@ -6,6 +6,7 @@ import java.util.Properties;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Message;
@@ -25,7 +26,7 @@ public class EmailService {
 
     public void sendVerificationEmail(String to, String userName, String code) throws Exception {
         // 1. Chuẩn bị dữ liệu cho Template
-        org.thymeleaf.context.Context context = new org.thymeleaf.context.Context();
+        Context context = new Context();
         context.setVariable("fullName", userName);
         context.setVariable("verificationCode", code);
 
@@ -34,6 +35,23 @@ public class EmailService {
 
         // 3. Gọi hàm send đã có của bạn
         sendEmail(to, "Mã xác thực tài khoản PhotocopyShop", bodyHtml);
+    }
+    public void sendRejectionEmail(String to, Long orderId) {
+        Context context = new Context();
+        context.setVariable("orderId", orderId);
+        String bodyHtml = templateEngine.process("rejectionEmail", context);
+        try {
+            sendEmail(to, "Thông báo từ chối đơn hàng từ PhotocopyShop", bodyHtml);
+        } catch (Exception e) {
+            System.err.println("Failed to send rejection email: " + e.getMessage());
+        }
+    }
+
+    public void sendResetPasswordEmail(String to, String resetToken) throws Exception {
+        Context context = new Context();
+        context.setVariable("resetLink", "http://localhost:5173/resetPassword?token=" + resetToken);
+        String bodyHtml = templateEngine.process("resetPasswordEmail", context);
+        sendEmail(to, "Yêu cầu đặt lại mật khẩu", bodyHtml);
     }
 
     public void sendEmail(String to, String subject, String bodyHtml) throws Exception {

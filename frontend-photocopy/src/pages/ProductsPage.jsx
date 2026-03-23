@@ -4,6 +4,9 @@ import Pagination from '../components/Pagination';
 import '../styles/productsPage.css';
 import { TabContext } from '../context/TabContext';
 import productApi from '../api/product.api';
+import { UserContext } from '../context/UserContext';
+import { useNavigate } from 'react-router-dom';
+import cartApi from '../api/cart.api';
 
 const ProductsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -11,11 +14,12 @@ const ProductsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState({ id: null, categoryName: 'All' });
   const { setCurrentTab } = useContext(TabContext);
+  const { user, setCartItemCount } = useContext(UserContext);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([{ id: null, categoryName: 'All' }]);
   const [totalPages, setTotalPages] = useState(1);
   const [matchedProducts, setMatchedProducts] = useState(0);
-
+  const nav = useNavigate();
   useEffect(() => {
     setCurrentTab('products');
     const initProducts = async () => {
@@ -59,13 +63,35 @@ useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, selectedCategory]);
 
-  const handleAddToCart = (product, qty = 1) => {
-    alert(`${product.productName} added to cart (qty: ${qty})`);
+  const handleAddToCart = async(product) => {
+    if(user && user.role === 'GUEST') {
+      nav('/login');
+      return;
+    }
+    else{
+      try{
+        const response = await cartApi.addToCart(product.id);
+        const countResponse = await cartApi.getCartItemCount();
+        setCartItemCount(countResponse.data || 0);
+        console.log('Add to cart response:', response);
+        console.log('Cart item count response:', countResponse);
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+      }
+    }
   };
 
-  const handleBuy = (product, qty = 1) => {
-    // placeholder: open checkout flow
-    alert(`Buy: ${product.productName} (qty: ${qty})`);
+  const handleBuy = async (product) => {
+    if(user && user.role === 'GUEST') {
+      nav('/login');
+      return;
+    }
+    else{
+      const response = await cartApi.addToCart(product.id);
+        const countResponse = await cartApi.getCartItemCount();
+        setCartItemCount(countResponse.data || 0);
+        nav('/cart');
+    }
   };
 
   return (

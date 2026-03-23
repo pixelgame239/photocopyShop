@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 
 import com.photocopy.backend.dto.request.LoginRequest;
 import com.photocopy.backend.dto.request.SignupRequest;
+import com.photocopy.backend.dto.request.UpdateUserRequest;
 import com.photocopy.backend.dto.response.AuthResponse;
 import com.photocopy.backend.dto.response.UserResponse;
 
@@ -14,8 +15,6 @@ public interface UserService {
     ResponseEntity<Void> preSignup(SignupRequest request);
 
     AuthResponse signup(SignupRequest request);
-
-    UserResponse getUserById(Long id);
 
     AuthResponse login(LoginRequest request);
 
@@ -30,4 +29,13 @@ public interface UserService {
     UserResponse createNewStaff(SignupRequest request, Authentication authentication);
 
     void deleteUser(Long userId, Authentication authentication);
+
+    void updateUserProfile(UpdateUserRequest request, Authentication authentication);
+
+    void changePassword(UpdateUserRequest request, Authentication authentication);
+
+    void sendResetPasswordEmail(UpdateUserRequest request);
+
+    boolean verifyResetToken(String token);
+
 }

@@ -1,6 +1,9 @@
 import axiosClient from "./axiosClient";
 
 const adminApi = {
+    getDashboardStats: async () => {
+        return await axiosClient.get("/admin/dashboard");
+    },
     createCategory: async (formData) => {
         return await axiosClient.post("/admin/category/create", { categoryName: formData.categoryName });
     },
@@ -40,6 +43,12 @@ const adminApi = {
     },
     createStaff: async (formData) => {
         return await axiosClient.post("/admin/users/createStaff", formData);
+    },
+    getAllOrders: async (page, size) => {
+        return await axiosClient.get(`/orders/getAllOrders?page=${page}&size=${size}`);
+    },
+    deleteOrder: async (orderId) => {
+        return await axiosClient.delete(`/admin/orders/delete/${orderId}`);
     }
 }
 export default adminApi;

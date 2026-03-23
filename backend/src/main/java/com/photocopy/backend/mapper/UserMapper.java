@@ -15,6 +15,7 @@ public class UserMapper {
                 user.getPhoneNumber(),
                 user.getUserPoint(),
                 user.isActive(),
+                user.getAddress(),
                 cartItemCount
         );
     }

@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.Properties;
 
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -23,6 +24,9 @@ public class EmailService {
 
     private final Gmail gmailService;
     private final TemplateEngine templateEngine;
+
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
     public void sendVerificationEmail(String to, String userName, String code) throws Exception {
         // 1. Chuẩn bị dữ liệu cho Template
@@ -49,7 +53,7 @@ public class EmailService {
 
     public void sendResetPasswordEmail(String to, String resetToken) throws Exception {
         Context context = new Context();
-        context.setVariable("resetLink", "http://localhost:5173/resetPassword?token=" + resetToken);
+        context.setVariable("resetLink", frontendUrl + "/resetPassword?token=" + resetToken);
         String bodyHtml = templateEngine.process("resetPasswordEmail", context);
         sendEmail(to, "Yêu cầu đặt lại mật khẩu", bodyHtml);
     }

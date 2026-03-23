@@ -82,3 +82,5 @@ supabase:
     region: ${SUPABASE_S3_REGION}
     storage:
       public-url-prefix: ${SUPABASE_S3_PUBLIC_URL_PREFIX}
+app:
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}

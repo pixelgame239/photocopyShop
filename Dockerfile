@@ -18,12 +18,13 @@ RUN gradle clean bootJar -x test
 FROM eclipse-temurin:25-jre
 WORKDIR /app
 
-# Lấy file build
 COPY --from=build /app/backend/build/libs/*.jar app.jar
-
 EXPOSE 8080
 
-# ⚠️ ÉP JAVA CHẠY VỚI 256MB RAM (Cực kỳ quan trọng)
-ENV JAVA_OPTS="-Xmx128m -Xms64m -XX:+UseSerialGC -XX:MaxMetaspaceSize=96m -Xss256k"
+# ⚠️ BỘ CỨU MẠNG V2 CHO 256MB RAM:
+# - Cắt Heap xuống 96MB (-Xmx96m)
+# - Tăng Metaspace lên 128MB (-XX:MaxMetaspaceSize=128m)
+# - Ép CodeCache xuống 32MB (-XX:ReservedCodeCacheSize=32m) để tránh vượt quá 256MB
+ENV JAVA_OPTS="-Xmx96m -Xms48m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=32m -XX:+UseSerialGC -Xss256k"
 
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

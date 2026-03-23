@@ -4,7 +4,7 @@ import { setAccessToken, clearAccessToken } from "./tokenService";
 import { useEffect } from "react";
 import axios from "axios";
 
-const API_URL = import.meta.env.API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const useAxiosInterceptor = () => {
     const navigate = useNavigate();

@@ -3,7 +3,7 @@ import { getAccessToken } from "./tokenService";
 
 let stompClient = null;
 
-const WS_URL = import.meta.env.VITE_WS_URL;
+const WS_URL = import.meta.env.WS_URL;
 export const connectWebSocket = (onMessageReceived, onNotificationReceived, user) => {
   const token = getAccessToken();
   stompClient = new Client({

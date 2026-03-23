@@ -25,6 +25,5 @@ EXPOSE 8080
 # - Cắt Heap xuống 96MB (-Xmx96m)
 # - Tăng Metaspace lên 128MB (-XX:MaxMetaspaceSize=128m)
 # - Ép CodeCache xuống 32MB (-XX:ReservedCodeCacheSize=32m) để tránh vượt quá 256MB
-ENV JAVA_OPTS="-Xmx96m -Xms48m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=32m -XX:+UseSerialGC -Xss256k"
-
+ENV JAVA_OPTS="-Xmx256m -Xms128m -XX:MaxMetaspaceSize=128m -XX:+UseSerialGC -Xss256k"
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

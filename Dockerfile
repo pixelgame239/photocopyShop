@@ -1,7 +1,8 @@
 # ==========================================
-# GIAI ĐOẠN 1: Build Backend với Gradle 8.14
+# GIAI ĐOẠN 1: Build Backend 
 # ==========================================
-FROM gradle:8.14-jdk25 AS build
+# Thay vì gọi đích danh 8.14, ta chỉ cần gọi jdk25, Docker sẽ tự lo phần Gradle
+FROM gradle:jdk25 AS build
 WORKDIR /app/backend
 
 # Copy toàn bộ nội dung thư mục backend vào container
@@ -12,18 +13,17 @@ RUN gradle clean bootJar -x test
 
 
 # ==========================================
-# GIAI ĐOẠN 2: Môi trường chạy (Chỉ cần JRE cho nhẹ)
+# GIAI ĐOẠN 2: Môi trường chạy siêu tiết kiệm RAM
 # ==========================================
 FROM eclipse-temurin:25-jre
 WORKDIR /app
 
-# Khác với Maven (lưu ở target/), Gradle lưu file build ở thư mục build/libs/
+# Lấy file build
 COPY --from=build /app/backend/build/libs/*.jar app.jar
 
-# Mở cổng 8080 (cổng mặc định của Spring Boot và Back4App)
 EXPOSE 8080
 
-# ⚠️ ÉP JAVA CHẠY VỚI 256MB RAM (KHÔNG ĐƯỢC XÀI 300MB NHÉ)
+# ⚠️ ÉP JAVA CHẠY VỚI 256MB RAM (Cực kỳ quan trọng)
 ENV JAVA_OPTS="-Xmx128m -Xms64m -XX:+UseSerialGC -XX:MaxMetaspaceSize=96m -Xss256k"
 
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

@@ -40,7 +40,7 @@ public class SecurityConfig {
             response.getWriter().write("{\"message\": \"Unauthorized\", \"status\": 401}");        
         }))
         .authorizeHttpRequests(auth->auth
-            .requestMatchers("/api/users/login", "/api/users/signup", "/api/users/refresh", 
+            .requestMatchers("/checkCron","/api/users/login", "/api/users/signup", "/api/users/refresh", 
             "/api/users/sendVerification", "/ws/**", "/api/chat/markAsRead/**", "/api/chat/getMessages/**", 
             "/api/chat/getBoxChatStatus/**", "/api/category/**", "/api/product/**", "/api/users/sendResetPasswordEmail", "/api/users/changePassword").permitAll()
             .requestMatchers("/api/orders/changeOrderStatus", "/api/orders/exportInvoice/**", "/api/orders/getOrdersStatus").hasAnyRole("ADMIN", "STAFF", "USER")

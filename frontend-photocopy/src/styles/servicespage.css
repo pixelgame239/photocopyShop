@@ -25,7 +25,8 @@
 .file-group{display:flex;align-items:center;gap:12px}
 .file-button{display:inline-flex;align-items:center;gap:8px;background:#f6f9ff;border:1px dashed #cfdff5;padding:9px 12px;border-radius:8px;cursor:pointer}
 .file-button span{font-size:14px;color:#1f56d5}
-.file-input{display:none}
+/* Scope file input hiding to services page only to avoid impacting other pages */
+.services-container .file-input{display:none}
 .file-meta{font-size:13px;color:#5f6b75}
 .remove-file{background:transparent;border:0;color:#d9534f;cursor:pointer;padding:6px;font-size:13px}
 

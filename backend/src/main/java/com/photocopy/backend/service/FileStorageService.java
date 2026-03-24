@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.photocopy.backend.exception.InternalServerException;
 import com.photocopy.backend.exception.NotFoundException;
 import com.photocopy.backend.exception.UnauthorizedException;
+import com.photocopy.backend.utils.FileUtils;
 
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -36,13 +37,14 @@ public class FileStorageService {
                 }
             }
             String originalFilename = file.getOriginalFilename();
+            String safeFileName = FileUtils.sanitizeFileName(originalFilename);
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
-                    .key(originalFilename)
+                    .key(safeFileName)
                     .contentType(file.getContentType())
                     .build();
             s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
-            return publicUrlPrefix + "/" + bucketName + "/" + originalFilename;
+            return publicUrlPrefix + "/" + bucketName + "/" + safeFileName;
         } catch (Exception e) {
             throw new InternalServerException("Lỗi upload file: " + e.getMessage());
         }
@@ -50,9 +52,10 @@ public class FileStorageService {
     public String uploadPrivateFile(MultipartFile file, String bucketName) {
         try{
             String originalFilename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            String safeFileName = FileUtils.sanitizeFileName(originalFilename);
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
-                    .key(originalFilename)
+                    .key(safeFileName)
                     .contentType(file.getContentType())
                     .build();
             s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));

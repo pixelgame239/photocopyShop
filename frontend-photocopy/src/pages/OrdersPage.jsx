@@ -11,14 +11,13 @@ import { UserContext } from "../context/UserContext";
 import adminApi from "../api/admin.api";
 
 const OrdersPage = () => {
-  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [expanded, setExpanded] = useState({});
   const [totalPage, setTotalPage] = useState(1);
   const { setCurrentTab} = useContext(TabContext);
-  const { user, setUnreadOrder } = useContext(UserContext);
+  const { user, setUnreadOrder, setCurrentOrders, currentOrders } = useContext(UserContext);
 
   useEffect(() => {
     setCurrentTab('orders');
@@ -32,7 +31,7 @@ const OrdersPage = () => {
         } else if (user && (user.role === "STAFF" || user.role === "ADMIN")) {
           response = await adminApi.getAllOrders(page, 10);
         }
-        setOrders(response.data.content || []);
+        setCurrentOrders(response.data.content || []);
         console.log("Fetched user orders:", response.data);
         setTotalPage(response.data.page.totalPages || 1);
         setError(null);
@@ -61,7 +60,7 @@ const OrdersPage = () => {
       const orderStatusData = { orderId: order.id, action: action, totalAmount: totalAmount, discount: discount };
       await ordersApi.changeOrderStatus(orderStatusData);
       toast.success("Trạng thái đơn hàng đã được cập nhật");
-      setOrders((prev) => prev.map((o) => o.id === order.id ? { ...o, status: action } : o));
+      setCurrentOrders((prev) => prev.map((o) => o.id === order.id ? { ...o, status: action } : o));
     } catch (err) {
       console.error(err);
       toast.error("Không thể cập nhật trạng thái đơn hàng");
@@ -86,7 +85,7 @@ const OrdersPage = () => {
 
   const handleModalConfirm = (totalAmount, discount) => {
     if (!modalOrder || !modalAction) return;
-    setOrders((prev) => prev.map((o) => o.id === modalOrder.id ? { ...o, status: modalAction, totalAmount, discount } : o));
+    setCurrentOrders((prev) => prev.map((o) => o.id === modalOrder.id ? { ...o, status: modalAction, totalAmount, discount } : o));
   };
 
   const toggleExpand = (id) => {
@@ -121,7 +120,7 @@ const OrdersPage = () => {
       <section className="orders-section">
         <h3 className="orders-section-title">Tất cả đơn hàng</h3>
         <div className="orders-list">
-          {orders.map((o) => (
+          {currentOrders.map((o) => (
             <div key={o.id} className={`orders-tile ${!o.productOrders || o.productOrders.length === 0 ? 'orders-tile-service' : ''}`}>
               <div className="orders-row">
                 <div className="orders-main">

@@ -59,7 +59,7 @@ public class FileStorageService {
                     .contentType(file.getContentType())
                     .build();
             s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
-            return originalFilename;
+            return safeFileName;
         } catch (Exception e) {
             throw new InternalServerException("Lỗi upload file: " + e.getMessage());
         }

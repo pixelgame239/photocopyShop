@@ -9,8 +9,8 @@ import com.photocopy.backend.dto.response.UserCartResponse;
 import com.photocopy.backend.entity.Product;
 import com.photocopy.backend.entity.User;
 import com.photocopy.backend.entity.UserCart;
-import com.photocopy.backend.exception.ForbiddenException;
 import com.photocopy.backend.exception.NotFoundException;
+import com.photocopy.backend.exception.UnauthorizedException;
 import com.photocopy.backend.repository.ProductRepository;
 import com.photocopy.backend.repository.UserCartRepository;
 import com.photocopy.backend.repository.UserRepository;
@@ -27,7 +27,7 @@ public class UserCartService {
 
     public List<UserCartResponse> getCartItems(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()|| authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_GUEST"))) {
-            throw new ForbiddenException("User must be authenticated to view cart items.");
+            throw new UnauthorizedException("User must be authenticated to view cart items.");
         }
         Long userId = Long.parseLong(authentication.getName());
         List<UserCart> cartItems = userCartRepository.findByUserId(userId);
@@ -38,7 +38,7 @@ public class UserCartService {
     @Transactional
     public void addToCart(Long productId, Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()|| authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_GUEST"))) {
-            throw new ForbiddenException("User must be authenticated to add items to cart.");
+            throw new UnauthorizedException("User must be authenticated to add items to cart.");
         }
         Long userId = Long.parseLong(authentication.getName());
         User currentUser = userRepository.findById(userId)
@@ -66,7 +66,7 @@ public class UserCartService {
         UserCart userCart = userCartRepository.findById(cartId)
                 .orElseThrow(() -> new NotFoundException("Cart item not found with id: " + cartId));
         if (authentication == null || !authentication.isAuthenticated()|| authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_GUEST")) || !userCart.getUser().getId().equals(Long.parseLong(authentication.getName()))) {
-            throw new ForbiddenException("User must be authenticated to update cart items.");
+            throw new UnauthorizedException("User must be authenticated to update cart items.");
         }
         userCart.changeQuantity(quantity);
         userCartRepository.save(userCart);
@@ -76,14 +76,14 @@ public class UserCartService {
         UserCart userCart = userCartRepository.findById(cartId)
                 .orElseThrow(() -> new NotFoundException("Cart item not found with id: " + cartId));
         if (authentication == null || !authentication.isAuthenticated()|| authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_GUEST")) || !userCart.getUser().getId().equals(Long.parseLong(authentication.getName()))) {
-            throw new ForbiddenException("User must be authenticated to remove items from cart.");
+            throw new UnauthorizedException("User must be authenticated to remove items from cart.");
         }
         userCartRepository.delete(userCart);
     }
 
     public int countCartItems(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()|| authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_GUEST"))) {
-            throw new ForbiddenException("User must be authenticated to view cart items.");
+            throw new UnauthorizedException("User must be authenticated to view cart items.");
         }
         Long userId = Long.parseLong(authentication.getName());
         return userCartRepository.countByUserId(userId);

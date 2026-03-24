@@ -7,9 +7,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.photocopy.backend.exception.ForbiddenException;
 import com.photocopy.backend.exception.InternalServerException;
 import com.photocopy.backend.exception.NotFoundException;
+import com.photocopy.backend.exception.UnauthorizedException;
 
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -32,7 +32,7 @@ public class FileStorageService {
                 boolean isAdmin = authentication.getAuthorities().stream()
                         .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
                 if (!isAdmin) {
-                    throw new InternalServerException("You do not have permission to upload files to this bucket");
+                    throw new UnauthorizedException("You do not have permission to upload files to this bucket");
                 }
             }
             String originalFilename = file.getOriginalFilename();
@@ -63,7 +63,7 @@ public class FileStorageService {
     }
     public String generatePresignedUrl(String fileName, String bucketName, Authentication authentication) {
         if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_GUEST"))) {
-            throw new ForbiddenException("You do not have permission to access files from this bucket");
+            throw new UnauthorizedException("You do not have permission to access files from this bucket");
         }
         try {
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
@@ -88,7 +88,7 @@ public class FileStorageService {
                 boolean isAdmin = authentication.getAuthorities().stream()
                         .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
                 if (!isAdmin) {
-                    throw new ForbiddenException("You do not have permission to delete files from this bucket");
+                    throw new UnauthorizedException("You do not have permission to delete files from this bucket");
                 }
                 key = fileUrl.replace(publicUrlPrefix + "/" + bucketName + "/", "");               
             }

@@ -10,6 +10,7 @@ import com.photocopy.backend.dto.response.CategoryResponse;
 import com.photocopy.backend.entity.Category;
 import com.photocopy.backend.exception.ForbiddenException;
 import com.photocopy.backend.exception.NotFoundException;
+import com.photocopy.backend.exception.UnauthorizedException;
 import com.photocopy.backend.repository.CategoryRepository;
 import com.photocopy.backend.repository.ProductRepository;
 
@@ -30,7 +31,7 @@ public class CategoryService {
     
     public CategoryResponse createCategory(CategoryRequest categoryRequest, Authentication authentication) {
         if (authentication == null || !authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            throw new ForbiddenException("Forbidden");
+            throw new UnauthorizedException("Forbidden");
         }
         Category newCategory = Category.builder()
                 .categoryName(categoryRequest.getCategoryName())
@@ -41,7 +42,7 @@ public class CategoryService {
     @Transactional
     public CategoryResponse updateCategory(CategoryRequest categoryRequest, Authentication authentication) {
         if (authentication == null || !authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            throw new ForbiddenException("Forbidden");
+            throw new UnauthorizedException("Forbidden");
         }
         Category category = categoryRepository.findById(categoryRequest.getId())
                 .orElseThrow(() -> new NotFoundException("Category not found"));
@@ -52,7 +53,7 @@ public class CategoryService {
     @Transactional
     public void deleteCategory(Long categoryId, Authentication authentication) {
         if (authentication == null || !authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            throw new ForbiddenException("Forbidden");
+            throw new UnauthorizedException("Forbidden");
         }
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException("Category not found"));

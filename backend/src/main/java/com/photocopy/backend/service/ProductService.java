@@ -10,8 +10,8 @@ import com.photocopy.backend.dto.request.ProductRequest;
 import com.photocopy.backend.dto.response.ProductResponse;
 import com.photocopy.backend.entity.Category;
 import com.photocopy.backend.entity.Product;
-import com.photocopy.backend.exception.ForbiddenException;
 import com.photocopy.backend.exception.NotFoundException;
+import com.photocopy.backend.exception.UnauthorizedException;
 import com.photocopy.backend.repository.CategoryRepository;
 import com.photocopy.backend.repository.ProductRepository;
 
@@ -34,7 +34,7 @@ public class ProductService {
     @Transactional
     public ProductResponse createProduct(ProductRequest productRequest, Authentication authentication) {
         if(authentication.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            throw new ForbiddenException("Forbidden: You do not have permission to perform this action");
+            throw new UnauthorizedException("Forbidden: You do not have permission to perform this action");
         }
         Category category = categoryRepository.findById(productRequest.getCategoryId())
                 .orElseThrow(() -> new NotFoundException("Category not found"));
@@ -58,7 +58,7 @@ public class ProductService {
     @Transactional
     public void deleteProduct(Long id, Authentication authentication) {
         if(authentication.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            throw new ForbiddenException("Forbidden: You do not have permission to perform this action");
+            throw new UnauthorizedException("Forbidden: You do not have permission to perform this action");
         }
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Product not found"));
@@ -71,7 +71,7 @@ public class ProductService {
     @Transactional
     public ProductResponse updateProduct(Long productId, ProductRequest productRequest, Authentication authentication) {
         if(authentication.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            throw new ForbiddenException("Forbidden: You do not have permission to perform this action");
+            throw new UnauthorizedException("Forbidden: You do not have permission to perform this action");
         };
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException("Product not found"));

@@ -20,7 +20,7 @@ public class CookieService {
                 .secure(false)
                 .path("/")
                 .maxAge(REFRESH_TOKEN_DURATION)
-                .sameSite("Lax") 
+                .sameSite("None") 
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
@@ -31,7 +31,7 @@ public class CookieService {
                 .secure(false)
                 .path("/")
                 .maxAge(0)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
